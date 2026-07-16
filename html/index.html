@@ -403,6 +403,23 @@
             color: var(--muted);
         }
         .best-cut .cut-link { display: block; text-decoration: none; }
+        .best-cut .cut-empty {
+            display: block;
+            padding: 30px 20px;
+            border-radius: 16px;
+            text-align: center;
+            font-size: 0.9rem;
+            font-weight: 600;
+            color: var(--muted);
+            text-decoration: none;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px dashed var(--border);
+            transition: border-color 0.25s ease, color 0.25s ease;
+        }
+        .best-cut .cut-empty:hover {
+            border-color: rgba(124, 92, 255, 0.5);
+            color: var(--text);
+        }
 
         /* ── aside ── */
         .info-item {
@@ -622,39 +639,42 @@
         setInterval(renderToday, 60000);
 
         // ── 여행 앨범 한 컷 ──
-        // 로그인했으면 직접 올린 사진 중에서, 아니면 예시 사진 중에서 날짜에 따라 하나를 고른다
-        const SAMPLE_ALBUM = [
-            { src: "../media/lijiang-gorge.jpg", alt: "중국 리장 호도협의 웅장한 협곡 풍경",
-              caption: "중국 리장 호도협의 웅장한 협곡 모습 (2025년 촬영)" },
-            { src: "../media/cebu-night.jpg", alt: "필리핀 세부의 불빛이 가득한 밤 스카이라인",
-              caption: "필리핀 세부의 밤 스카이라인 (2024년 촬영)" },
-            { src: "../media/hokkaido.jpg", alt: "눈으로 덮인 홋카이도 대설산의 능선",
-              caption: "눈으로 덮인 홋카이도 대설산 (2025년 촬영)" }
-        ];
-
+        // 내가 직접 올린 사진 중 날짜에 따라 하나를 보여준다.
+        // 아직 올린 사진이 없으면 남의 사진(예시)을 대신 보여주지 않고 업로드를 안내한다.
+        // (예전에는 사진이 없을 때 예시 사진을 자기 것처럼 보여줘서 "가입하자마자
+        //  이미 사진이 올라가 있다"는 혼란을 줬다.)
         function renderAlbumCut() {
+            const box = document.getElementById("albumCut");
             const user = Auth.currentUser();
             const mine = user ? Auth.getPhotos(user.userId) : [];
-            const pool = mine.length
-                ? mine.map((p) => ({ src: p.dataUrl, alt: p.caption || "내가 올린 여행 사진", caption: p.caption }))
-                : SAMPLE_ALBUM;
+
+            if (!mine.length) {
+                box.replaceChildren(
+                    Object.assign(document.createElement("a"), {
+                        href: "myTrip.html",
+                        className: "cut-empty",
+                        textContent: "📷 아직 올린 사진이 없습니다 · 첫 사진 올리러 가기 →"
+                    })
+                );
+                return;
+            }
 
             const dayNumber = Math.floor(Date.now() / 86400000);
-            const cut = pool[dayNumber % pool.length];
+            const cut = mine[dayNumber % mine.length];
 
             const link = document.createElement("a");
             link.href = "myTrip.html";
             link.className = "cut-link";
 
             const img = document.createElement("img");
-            img.src = cut.src;
-            img.alt = cut.alt;
+            img.src = cut.dataUrl;
+            img.alt = cut.title || "내가 올린 여행 사진";
 
             const caption = document.createElement("figcaption");
-            caption.textContent = (cut.caption || "여행 사진") + " · 앨범 전체 보기 →";
+            caption.textContent = (cut.title || "여행 사진") + " · 앨범 전체 보기 →";
 
             link.append(img);
-            document.getElementById("albumCut").replaceChildren(link, caption);
+            box.replaceChildren(link, caption);
         }
 
         // ── 로그인 상태가 바뀔 때 ──
