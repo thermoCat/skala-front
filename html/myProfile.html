@@ -27,7 +27,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding: 60px 24px 80px;
+            padding: 92px 24px 80px;
             overflow-x: hidden;
         }
 
@@ -241,6 +241,52 @@
             font-size: 0.93rem;
         }
 
+        /* ── 로그인 사용자 정보 ── */
+        .me {
+            margin-top: 26px;
+            padding: 22px 24px;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border);
+        }
+        .me-quote {
+            font-size: 1.02rem;
+            font-weight: 700;
+            line-height: 1.6;
+        }
+        .me-quote::before { content: "“"; color: var(--accent-1); margin-right: 2px; }
+        .me-quote::after  { content: "”"; color: var(--accent-2); margin-left: 2px; }
+        .me-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 18px;
+        }
+        .me-grid div {
+            padding: 11px 14px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border);
+        }
+        .me-grid .k {
+            display: block;
+            font-size: 0.72rem;
+            color: var(--muted);
+            margin-bottom: 2px;
+        }
+        .me-grid .v { font-size: 0.88rem; font-weight: 700; }
+        .guest-note {
+            margin-top: 26px;
+            padding: 20px 24px;
+            border-radius: 18px;
+            font-size: 0.9rem;
+            color: var(--muted);
+            background: rgba(124, 92, 255, 0.07);
+            border: 1px dashed rgba(124, 92, 255, 0.4);
+        }
+        .guest-note a { color: var(--accent-2); font-weight: 700; text-decoration: none; }
+        .guest-note a:hover { text-decoration: underline; }
+
         @keyframes fadeUp {
             from { opacity: 0; transform: translateY(30px); }
             to   { opacity: 1; transform: translateY(0); }
@@ -266,10 +312,35 @@
         <span></span><span></span><span></span>
     </div>
 
+    <div id="auth-area"></div>
+
     <main class="card">
         <div class="badge"><span class="dot"></span>SKALA FRONTEND · MY PROFILE</div>
-        <h1>👋 안녕하세요! <span class="gradient">저를 소개합니다</span></h1>
+        <h1>👋 안녕하세요!
+            <span class="gradient"><span data-personal="name" data-fallback="저">저</span><span data-josa="을/를">를</span> 소개합니다</span>
+        </h1>
         <p class="intro">아래는 제가 좋아하는 것들과 올해의 계획, 그리고 저를 표현하는 단어들입니다.</p>
+
+        <!-- 로그인 상태: 회원가입 때 입력한 내용을 그대로 보여준다 -->
+        <div class="me" data-auth="in" hidden>
+            <p class="me-quote" data-personal="intro"
+               data-fallback="아직 한 줄 소개를 작성하지 않았습니다."></p>
+            <div class="me-grid">
+                <div><span class="k">아이디</span><span class="v">@<span data-personal="userId"></span></span></div>
+                <div><span class="k">이메일</span><span class="v" data-personal="email" data-fallback="-"></span></div>
+                <div><span class="k">생년월일</span><span class="v" data-personal="birth" data-fallback="-"></span></div>
+                <div><span class="k">성별</span><span class="v" data-personal="gender" data-fallback="-"></span></div>
+                <div><span class="k">관심 분야</span><span class="v" data-personal="interests" data-fallback="선택 안 함"></span></div>
+                <div><span class="k">가입 경로</span><span class="v" data-personal="route" data-fallback="-"></span></div>
+            </div>
+        </div>
+
+        <!-- 비로그인 상태: 개인 정보 대신 공통 안내를 보여준다 -->
+        <p class="guest-note" data-auth="out" hidden>
+            🔒 지금은 로그인하지 않은 상태라 공통 내용만 보입니다.
+            <a href="logIn.html">로그인</a>하면 회원가입 때 작성한 한 줄 소개와 프로필이 이 자리에 표시됩니다.
+            아직 계정이 없다면 <a href="signUp.html">회원가입</a>부터 해주세요.
+        </p>
 
         <section>
             <h2>😎 내가 <span class="accent">좋아하는 것</span></h2>
@@ -309,6 +380,8 @@
         </section>
     </main>
 
-    <footer>SKALA · Frontend Playground</footer>
+    <footer><a href="index.html">← 메인으로 돌아가기</a></footer>
+
+    <script src="../js/auth.js"></script>
 </body>
 </html>

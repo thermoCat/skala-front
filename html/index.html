@@ -31,36 +31,7 @@
             overflow-x: hidden;
         }
 
-        /* ── 오른쪽 위 회원가입 버튼 ── */
-        .signup-btn {
-            position: fixed;
-            top: 22px;
-            right: 24px;
-            z-index: 10;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            padding: 11px 24px;
-            border-radius: 999px;
-            text-decoration: none;
-            font-size: 0.9rem;
-            font-weight: 700;
-            color: #fff;
-            background: linear-gradient(90deg, var(--accent-1), var(--accent-2));
-            box-shadow: 0 8px 26px rgba(124, 92, 255, 0.4);
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
-            animation: fadeDown 0.9s 0.3s ease both;
-        }
-        .signup-btn:hover {
-            transform: translateY(-3px) scale(1.04);
-            box-shadow: 0 14px 38px rgba(124, 92, 255, 0.55);
-        }
-        .signup-btn:active { transform: translateY(0) scale(0.99); }
-
-        @keyframes fadeDown {
-            from { opacity: 0; transform: translateY(-16px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
+        /* 우측 상단 로그인/회원가입 영역은 js/auth.js가 그린다 */
 
         /* ── 움직이는 오로라 배경 ── */
         .aurora {
@@ -366,12 +337,13 @@
         <span></span><span></span><span></span>
     </div>
 
-    <a href="signUp.html" class="signup-btn">✍️ 회원가입</a>
+    <div id="auth-area"></div>
 
     <div class="shell">
         <header class="site-header">
             <div class="badge"><span class="dot"></span>SKALA FRONTEND · MAIN HUB</div>
-            <h1>장상민의 <span class="gradient">유니버스</span> 🚀</h1>
+            <h1><span data-personal="name" data-fallback="SKALA">SKALA</span>의
+                <span class="gradient">유니버스</span> 🚀</h1>
             <p class="tagline"><span class="typing" id="typing"></span></p>
         </header>
 
@@ -384,6 +356,7 @@
                     <li><a href="myHoliday.html" class="nav-link">🏖️ 휴일 계획 <span class="en">Holiday</span></a></li>
                     <li><a href="myTrip.html" class="nav-link">🌍 여행 앨범 <span class="en">Album</span></a></li>
                     <li><a href="signUp.html" class="nav-link">✍️ 회원가입 <span class="en">Sign Up</span></a></li>
+                    <li data-auth="out" hidden><a href="logIn.html" class="nav-link">🔑 로그인 <span class="en">Log In</span></a></li>
                 </ul>
             </nav>
 
@@ -417,6 +390,14 @@
                     <span class="k">현재 시각</span>
                     <span class="v" id="clock">--:--:--</span>
                 </div>
+                <div class="info-item" data-auth="in" hidden>
+                    <span class="k">로그인 계정</span>
+                    <span class="v">@<span data-personal="userId"></span></span>
+                </div>
+                <div class="info-item" data-auth="out" hidden>
+                    <span class="k">로그인 상태</span>
+                    <span class="v">🔒 <a href="logIn.html">로그인</a>하면 내 정보로 채워집니다</span>
+                </div>
                 <div class="info-item">
                     <span class="k">현재 위치</span>
                     <span class="v">📍 광주광역시 광산구</span>
@@ -433,11 +414,13 @@
         </div>
 
         <footer class="site-footer">
-            <p>이메일 문의: <a href="mailto:jangsangmin0401@gmail.com">jangsangmin0401@gmail.com</a></p>
+            <p data-auth="in" hidden>이메일 문의: <span data-personal="email"></span></p>
+            <p data-auth="out" hidden>이메일 문의: 로그인하면 회원님의 이메일이 표시됩니다.</p>
             <p class="copy">© 2026 SKALA 프로젝트. 모든 태그는 웹 표준 사양에 따라 작성되었습니다.</p>
         </footer>
     </div>
 
+    <script src="../js/auth.js"></script>
     <script>
         // 타이핑 효과
         const phrases = [
@@ -497,8 +480,8 @@
             }
         }
 
-        // 메뉴·회원가입 버튼 클릭 → 폭죽을 터뜨린 뒤 이동
-        document.querySelectorAll(".nav-link, .signup-btn").forEach((link) => {
+        // 메뉴 클릭 → 폭죽을 터뜨린 뒤 이동
+        document.querySelectorAll(".nav-link").forEach((link) => {
             link.addEventListener("click", (e) => {
                 // 새 탭으로 여는 클릭은 기본 동작을 그대로 둔다
                 if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
