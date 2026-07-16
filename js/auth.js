@@ -35,9 +35,13 @@
     function write(key, value) {
         try {
             localStorage.setItem(key, JSON.stringify(value));
-            return true;
+            return { ok: true };
         } catch (e) {
-            return false;
+            // 사진을 여러 장 올리면 저장 공간이 찰 수 있어 원인을 구분해 돌려준다
+            var full = e && (e.name === "QuotaExceededError" ||
+                             e.name === "NS_ERROR_DOM_QUOTA_REACHED" ||
+                             e.code === 22 || e.code === 1014);
+            return { ok: false, full: !!full };
         }
     }
 
@@ -55,6 +59,22 @@
         users[user.userId] = Object.assign({}, prev, user);
         write(USERS_KEY, users);
         return users[user.userId];
+    }
+
+    /* ── 여행 사진 ─────────────────────────── */
+    // 사진은 용량이 커서 회원 정보와 따로 보관한다 (회원 저장 때마다 같이 직렬화되면 느려진다)
+
+    function photosKey(userId) {
+        return "skala:photos:" + userId;
+    }
+
+    function getPhotos(userId) {
+        return userId ? read(photosKey(userId), []) : [];
+    }
+
+    function savePhotos(userId, photos) {
+        if (!userId) return { ok: false };
+        return write(photosKey(userId), photos);
     }
 
     function login(userId, password) {
@@ -264,6 +284,8 @@
         refresh: refresh,
         parseLines: parseLines,
         parseTerms: parseTerms,
+        getPhotos: getPhotos,
+        savePhotos: savePhotos,
         labels: { gender: GENDER_LABEL, interest: INTEREST_LABEL, route: ROUTE_LABEL }
     };
 

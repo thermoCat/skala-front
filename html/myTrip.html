@@ -136,16 +136,12 @@
             margin-top: 42px;
             padding-top: 34px;
             border-top: 1px solid var(--border);
-            animation: fadeUp 0.9s ease both;
+            animation: fadeUp 0.9s 0.15s ease both;
         }
-        section:nth-of-type(1) { animation-delay: 0.15s; }
-        section:nth-of-type(2) { animation-delay: 0.3s; }
-        section:nth-of-type(3) { animation-delay: 0.45s; }
-
         h2 {
             font-size: 1.3rem;
             font-weight: 800;
-            margin-bottom: 16px;
+            margin-bottom: 8px;
             letter-spacing: -0.01em;
         }
         h2 .accent {
@@ -157,27 +153,67 @@
         .desc {
             color: var(--muted);
             font-size: 0.9rem;
-            margin-bottom: 16px;
+            margin-bottom: 18px;
         }
 
-        /* ── 오디오 ── */
-        audio {
-            width: 100%;
-            border-radius: 12px;
-            color-scheme: dark;
+        /* ── 업로드 영역 ── */
+        .uploader {
+            display: block;
+            padding: 30px 24px;
+            border-radius: 18px;
+            text-align: center;
+            cursor: pointer;
+            background: rgba(124, 92, 255, 0.06);
+            border: 2px dashed rgba(124, 92, 255, 0.45);
+            transition: background 0.25s ease, border-color 0.25s ease, transform 0.25s ease;
         }
-        .media-note {
-            margin-top: 10px;
-            font-size: 0.78rem;
+        .uploader:hover,
+        .uploader.dragover {
+            background: rgba(124, 92, 255, 0.14);
+            border-color: rgba(124, 92, 255, 0.8);
+            transform: translateY(-3px);
+        }
+        .uploader .up-icon { font-size: 2rem; }
+        .uploader .up-title {
+            margin-top: 8px;
+            font-weight: 800;
+            font-size: 1rem;
+        }
+        .uploader .up-sub {
+            margin-top: 4px;
+            font-size: 0.82rem;
             color: var(--muted);
+        }
+        .uploader input[type="file"] { display: none; }
+
+        .upload-msg {
+            display: none;
+            margin-top: 12px;
+            padding: 11px 15px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        .upload-msg.show { display: block; }
+        .upload-msg.error {
+            color: #ffc0d2;
+            background: rgba(255, 92, 138, 0.12);
+            border: 1px solid rgba(255, 92, 138, 0.4);
+        }
+        .upload-msg.ok {
+            color: #b8f5cd;
+            background: rgba(74, 222, 128, 0.1);
+            border: 1px solid rgba(74, 222, 128, 0.35);
         }
 
         /* ── 사진 앨범 ── */
         .album {
             display: grid;
             gap: 22px;
+            margin-top: 24px;
         }
         figure {
+            position: relative;
             border-radius: 16px;
             overflow: hidden;
             background: rgba(255, 255, 255, 0.04);
@@ -194,37 +230,80 @@
             width: 100%;
             aspect-ratio: 16 / 10;
             object-fit: cover;
-            /* 이미지 파일을 넣기 전에도 자리와 톤이 유지되도록 */
+            /* 파일이 없어도 자리와 톤이 유지되도록 */
             background: linear-gradient(135deg, rgba(124, 92, 255, 0.22), rgba(0, 212, 255, 0.14));
             color: var(--muted);
             font-size: 0.85rem;
         }
         figcaption {
-            padding: 13px 18px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px 16px;
+        }
+        .cap-input {
+            flex: 1;
+            padding: 8px 12px;
+            border-radius: 10px;
+            font-family: inherit;
+            font-size: 0.86rem;
+            font-weight: 700;
+            color: var(--text);
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid transparent;
+            transition: border-color 0.2s ease, background 0.2s ease;
+        }
+        .cap-input:hover { border-color: var(--border); }
+        .cap-input:focus {
+            outline: none;
+            background: rgba(124, 92, 255, 0.1);
+            border-color: rgba(124, 92, 255, 0.6);
+        }
+        .cap-text {
+            flex: 1;
             font-size: 0.88rem;
             font-weight: 700;
+            padding: 8px 12px;
         }
-        figcaption .year {
-            margin-left: 6px;
-            font-weight: 500;
+        .del-btn {
+            flex-shrink: 0;
+            padding: 7px 13px;
+            border-radius: 10px;
+            border: 1px solid var(--border);
+            font-family: inherit;
+            font-size: 0.78rem;
+            font-weight: 700;
             color: var(--muted);
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.04);
+            transition: color 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+        }
+        .del-btn:hover {
+            color: #ffc0d2;
+            background: rgba(255, 92, 138, 0.14);
+            border-color: rgba(255, 92, 138, 0.45);
         }
 
-        /* ── 비디오 ── */
-        video {
-            display: block;
-            width: 100%;
-            aspect-ratio: 16 / 9;
+        .album-empty {
+            padding: 34px 22px;
             border-radius: 16px;
-            border: 1px solid var(--border);
-            background: linear-gradient(135deg, rgba(255, 92, 138, 0.18), rgba(124, 92, 255, 0.14));
-            color-scheme: dark;
+            text-align: center;
+            font-size: 0.92rem;
+            color: var(--muted);
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px dashed var(--border);
         }
-        .vlog-caption {
-            margin-top: 12px;
-            font-size: 0.88rem;
-            font-weight: 700;
+
+        .guest-note {
+            padding: 20px 24px;
+            border-radius: 18px;
+            font-size: 0.9rem;
+            color: var(--muted);
+            background: rgba(124, 92, 255, 0.07);
+            border: 1px dashed rgba(124, 92, 255, 0.4);
         }
+        .guest-note a { color: var(--accent-2); font-weight: 700; text-decoration: none; }
+        .guest-note a:hover { text-decoration: underline; }
 
         @keyframes fadeUp {
             from { opacity: 0; transform: translateY(30px); }
@@ -253,57 +332,242 @@
     <main class="card">
         <div class="badge"><span class="dot"></span>SKALA FRONTEND · MY TRIP</div>
         <h1>🌍 <span data-personal="name" data-fallback="나">나</span>의
-            <span class="gradient">여행 앨범</span> 🎵</h1>
-        <p class="intro">여행지에서 담아온 사진과 소리, 그리고 영상을 모았습니다.</p>
-
-        <section>
-            <h2>🎵 <span class="accent">여행의 배경 음악</span></h2>
-            <p class="desc">사진을 넘기며 함께 들으면 그날의 공기가 떠오릅니다.</p>
-            <audio controls preload="metadata">
-                <source src="../media/travel-theme.mp3" type="audio/mpeg">
-                <source src="../media/travel-theme.ogg" type="audio/ogg">
-                이 브라우저는 audio 요소를 지원하지 않습니다.
-                <a href="../media/travel-theme.mp3">음악 파일을 내려받아 들어주세요.</a>
-            </audio>
-            <p class="media-note">※ media 폴더에 travel-theme.mp3 파일을 넣으면 재생됩니다.</p>
-        </section>
+            <span class="gradient">여행 앨범</span> 📷</h1>
+        <p class="intro">여행지에서 담아온 사진을 모았습니다.</p>
 
         <section>
             <h2>📷 <span class="accent">여행 사진</span></h2>
-            <div class="album">
-                <figure>
-                    <img src="../media/lijiang-gorge.jpg"
-                         alt="중국 리장 호도협의 웅장한 협곡 풍경">
-                    <figcaption>리장 호도협 <span class="year">(2025년)</span></figcaption>
-                </figure>
-                <figure>
-                    <img src="../media/cebu-night.jpg"
-                         alt="필리핀 세부의 불빛이 가득한 밤 스카이라인">
-                    <figcaption>세부 밤 스카이라인 <span class="year">(2024년)</span></figcaption>
-                </figure>
-                <figure>
-                    <img src="../media/hokkaido.jpg"
-                         alt="눈으로 덮인 홋카이도 대설산의 능선">
-                    <figcaption>홋카이도 대설산 <span class="year">(2025년)</span></figcaption>
-                </figure>
-            </div>
-        </section>
 
-        <section>
-            <h2>🎬 <span class="accent">나의 여행 브이로그</span></h2>
-            <p class="desc">사진에 담기지 않은 순간들은 영상으로 남겼습니다.</p>
-            <video controls preload="metadata" poster="../media/vlog-poster.jpg">
-                <source src="../media/travel-vlog.mp4" type="video/mp4">
-                <source src="../media/travel-vlog.webm" type="video/webm">
-                이 브라우저는 video 요소를 지원하지 않습니다.
-                <a href="../media/travel-vlog.mp4">영상을 내려받아 시청해 주세요.</a>
-            </video>
-            <p class="vlog-caption">🎵 리장의 아름다운 음악</p>
-            <p class="media-note">※ media 폴더에 travel-vlog.mp4 파일을 넣으면 재생됩니다.</p>
+            <!-- 로그인한 회원만 자기 사진을 올릴 수 있다 -->
+            <div data-auth="in" hidden>
+                <p class="desc">사진을 고르면 바로 앨범에 추가됩니다. 설명은 눌러서 바꿀 수 있습니다.</p>
+
+                <label class="uploader" id="uploader">
+                    <input type="file" id="fileInput" accept="image/*" multiple>
+                    <p class="up-icon">📤</p>
+                    <p class="up-title">내 컴퓨터에서 사진 올리기</p>
+                    <p class="up-sub">여기를 누르거나 사진을 끌어다 놓으세요 · 여러 장 한 번에 가능</p>
+                </label>
+
+                <p class="upload-msg" id="uploadMsg"></p>
+            </div>
+
+            <p class="guest-note" data-auth="out" hidden>
+                🔒 지금은 로그인하지 않아 예시 사진만 보입니다.
+                <a href="logIn.html">로그인</a>하면 내 컴퓨터에 있는 사진을 직접 올려
+                나만의 앨범을 만들 수 있습니다.
+                아직 계정이 없다면 <a href="signUp.html">회원가입</a>부터 해주세요.
+            </p>
+
+            <div class="album" id="album"></div>
         </section>
     </main>
 
     <footer><a href="index.html">← 메인으로 돌아가기</a></footer>
+
     <script src="../js/auth.js"></script>
+    <script>
+        // 비로그인 상태에서 보여줄 예시 사진 (media 폴더에 파일을 두면 나타난다)
+        const SAMPLE_PHOTOS = [
+            { src: "../media/lijiang-gorge.jpg", caption: "리장 호도협 (2025년)",
+              alt: "중국 리장 호도협의 웅장한 협곡 풍경" },
+            { src: "../media/cebu-night.jpg", caption: "세부 밤 스카이라인 (2024년)",
+              alt: "필리핀 세부의 불빛이 가득한 밤 스카이라인" },
+            { src: "../media/hokkaido.jpg", caption: "홋카이도 대설산 (2025년)",
+              alt: "눈으로 덮인 홋카이도 대설산의 능선" }
+        ];
+
+        // 원본 사진은 수 MB라 그대로 두면 저장 공간이 금방 찬다.
+        // 긴 변을 1600px로 줄이고 JPEG로 다시 인코딩해 200KB 안팎으로 만든다.
+        const MAX_SIDE = 1600;
+        const QUALITY = 0.8;
+
+        function downscale(file) {
+            return new Promise((resolve, reject) => {
+                const url = URL.createObjectURL(file);
+                const img = new Image();
+                img.onload = () => {
+                    URL.revokeObjectURL(url);
+                    const scale = Math.min(1, MAX_SIDE / Math.max(img.width, img.height));
+                    const canvas = document.createElement("canvas");
+                    canvas.width = Math.round(img.width * scale);
+                    canvas.height = Math.round(img.height * scale);
+                    canvas.getContext("2d").drawImage(img, 0, 0, canvas.width, canvas.height);
+                    resolve(canvas.toDataURL("image/jpeg", QUALITY));
+                };
+                img.onerror = () => {
+                    URL.revokeObjectURL(url);
+                    reject(new Error(file.name + " 은(는) 사진으로 읽을 수 없습니다."));
+                };
+                img.src = url;
+            });
+        }
+
+        const album = document.getElementById("album");
+        const msgBox = document.getElementById("uploadMsg");
+
+        function showMsg(text, kind) {
+            msgBox.textContent = text;
+            msgBox.className = "upload-msg show " + kind;
+        }
+        function clearMsg() {
+            msgBox.className = "upload-msg";
+        }
+
+        function myPhotos() {
+            const user = Auth.currentUser();
+            return user ? Auth.getPhotos(user.userId) : [];
+        }
+
+        function persist(photos) {
+            const user = Auth.currentUser();
+            if (!user) return true;
+            const result = Auth.savePhotos(user.userId, photos);
+            if (!result.ok) {
+                showMsg(result.full
+                    ? "저장 공간이 가득 찼습니다. 기존 사진을 몇 장 지우고 다시 올려주세요."
+                    : "사진을 저장하지 못했습니다.", "error");
+                return false;
+            }
+            return true;
+        }
+
+        function renderAlbum() {
+            const user = Auth.currentUser();
+            album.replaceChildren();
+
+            // 비로그인: 예시 사진만 보여준다
+            if (!user) {
+                SAMPLE_PHOTOS.forEach((photo) => {
+                    const fig = document.createElement("figure");
+                    const img = document.createElement("img");
+                    img.src = photo.src;
+                    img.alt = photo.alt;
+                    const cap = document.createElement("figcaption");
+                    const text = document.createElement("span");
+                    text.className = "cap-text";
+                    text.textContent = photo.caption;
+                    cap.append(text);
+                    fig.append(img, cap);
+                    album.append(fig);
+                });
+                return;
+            }
+
+            const photos = myPhotos();
+            if (!photos.length) {
+                const empty = document.createElement("p");
+                empty.className = "album-empty";
+                empty.textContent = "아직 올린 사진이 없습니다. 위에서 첫 사진을 올려보세요 📷";
+                album.append(empty);
+                return;
+            }
+
+            photos.forEach((photo) => {
+                const fig = document.createElement("figure");
+
+                const img = document.createElement("img");
+                img.src = photo.dataUrl;
+                img.alt = photo.caption || "내가 올린 여행 사진";
+
+                const cap = document.createElement("figcaption");
+
+                const input = document.createElement("input");
+                input.className = "cap-input";
+                input.value = photo.caption;
+                input.placeholder = "사진 설명을 적어주세요";
+                input.addEventListener("change", () => {
+                    const list = myPhotos();
+                    const target = list.find((p) => p.id === photo.id);
+                    if (!target) return;
+                    target.caption = input.value.trim();
+                    if (persist(list)) showMsg("설명을 저장했습니다.", "ok");
+                });
+
+                const del = document.createElement("button");
+                del.type = "button";
+                del.className = "del-btn";
+                del.textContent = "삭제";
+                del.addEventListener("click", () => {
+                    if (!confirm("이 사진을 앨범에서 지울까요?")) return;
+                    const left = myPhotos().filter((p) => p.id !== photo.id);
+                    if (persist(left)) {
+                        renderAlbum();
+                        showMsg("사진을 지웠습니다.", "ok");
+                    }
+                });
+
+                cap.append(input, del);
+                fig.append(img, cap);
+                album.append(fig);
+            });
+        }
+
+        async function addFiles(fileList) {
+            const files = [...fileList].filter((f) => f.type.startsWith("image/"));
+            if (!files.length) {
+                showMsg("사진 파일만 올릴 수 있습니다.", "error");
+                return;
+            }
+
+            clearMsg();
+            showMsg(`사진 ${files.length}장을 준비하는 중…`, "ok");
+
+            const photos = myPhotos();
+            let added = 0;
+
+            for (const file of files) {
+                try {
+                    const dataUrl = await downscale(file);
+                    photos.push({
+                        id: Date.now() + "-" + Math.random().toString(36).slice(2, 8),
+                        dataUrl: dataUrl,
+                        // 확장자를 뗀 파일명을 첫 설명으로 쓴다
+                        caption: file.name.replace(/\.[^.]+$/, ""),
+                        addedAt: new Date().toISOString()
+                    });
+                    added++;
+                } catch (e) {
+                    showMsg(e.message, "error");
+                }
+            }
+
+            if (!added) return;
+            if (!persist(photos)) return;
+
+            renderAlbum();
+            showMsg(`사진 ${added}장을 앨범에 추가했습니다.`, "ok");
+        }
+
+        // 파일 선택
+        const fileInput = document.getElementById("fileInput");
+        fileInput.addEventListener("change", () => {
+            addFiles(fileInput.files);
+            // 같은 파일을 다시 골라도 change가 발생하도록 비워둔다
+            fileInput.value = "";
+        });
+
+        // 끌어다 놓기
+        const uploader = document.getElementById("uploader");
+        ["dragenter", "dragover"].forEach((type) => {
+            uploader.addEventListener(type, (e) => {
+                e.preventDefault();
+                uploader.classList.add("dragover");
+            });
+        });
+        ["dragleave", "drop"].forEach((type) => {
+            uploader.addEventListener(type, () => uploader.classList.remove("dragover"));
+        });
+        uploader.addEventListener("drop", (e) => {
+            e.preventDefault();
+            addFiles(e.dataTransfer.files);
+        });
+
+        // 로그인·로그아웃할 때마다 앨범을 다시 그린다
+        document.addEventListener("auth:change", () => {
+            clearMsg();
+            renderAlbum();
+        });
+    </script>
 </body>
 </html>

@@ -488,7 +488,10 @@
                     <li><a href="myClass.html" class="nav-link">📅 수업 시간표 <span class="en">Class</span></a></li>
                     <li><a href="myHoliday.html" class="nav-link">🏖️ 휴일 계획 <span class="en">Holiday</span></a></li>
                     <li><a href="myTrip.html" class="nav-link">🌍 여행 앨범 <span class="en">Album</span></a></li>
-                    <li><a href="signUp.html" class="nav-link">✍️ 회원가입 <span class="en">Sign Up</span></a></li>
+                    <!-- 이미 로그인한 회원에게는 회원가입 메뉴를 보여주지 않는다 -->
+                    <li data-auth="out" hidden>
+                        <a href="signUp.html" class="nav-link">✍️ 회원가입 <span class="en">Sign Up</span></a>
+                    </li>
                 </ul>
             </nav>
 
@@ -618,8 +621,9 @@
         // 수업이 바뀌는 순간을 놓치지 않도록 1분마다 다시 그린다
         setInterval(renderToday, 60000);
 
-        // ── 여행 앨범 한 컷 (날짜에 따라 돌아가며 보여준다) ──
-        const ALBUM = [
+        // ── 여행 앨범 한 컷 ──
+        // 로그인했으면 직접 올린 사진 중에서, 아니면 예시 사진 중에서 날짜에 따라 하나를 고른다
+        const SAMPLE_ALBUM = [
             { src: "../media/lijiang-gorge.jpg", alt: "중국 리장 호도협의 웅장한 협곡 풍경",
               caption: "중국 리장 호도협의 웅장한 협곡 모습 (2025년 촬영)" },
             { src: "../media/cebu-night.jpg", alt: "필리핀 세부의 불빛이 가득한 밤 스카이라인",
@@ -629,8 +633,14 @@
         ];
 
         function renderAlbumCut() {
+            const user = Auth.currentUser();
+            const mine = user ? Auth.getPhotos(user.userId) : [];
+            const pool = mine.length
+                ? mine.map((p) => ({ src: p.dataUrl, alt: p.caption || "내가 올린 여행 사진", caption: p.caption }))
+                : SAMPLE_ALBUM;
+
             const dayNumber = Math.floor(Date.now() / 86400000);
-            const cut = ALBUM[dayNumber % ALBUM.length];
+            const cut = pool[dayNumber % pool.length];
 
             const link = document.createElement("a");
             link.href = "myTrip.html";
@@ -641,16 +651,17 @@
             img.alt = cut.alt;
 
             const caption = document.createElement("figcaption");
-            caption.textContent = cut.caption + " · 앨범 전체 보기 →";
+            caption.textContent = (cut.caption || "여행 사진") + " · 앨범 전체 보기 →";
 
             link.append(img);
             document.getElementById("albumCut").replaceChildren(link, caption);
         }
-        renderAlbumCut();
 
-        // ── 로그인 전에는 헤더 아래를 흐리게 ──
+        // ── 로그인 상태가 바뀔 때 ──
         document.addEventListener("auth:change", (e) => {
+            // 로그인 전에는 헤더 아래를 흐리게 덮는다
             document.getElementById("gated").classList.toggle("locked", !e.detail.user);
+            renderAlbumCut();
         });
 
         // 타이핑 효과
