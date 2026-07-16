@@ -211,41 +211,135 @@
             color: var(--muted);
         }
 
-        /* 비로그인 상태의 잠긴 메뉴 */
-        .nav-locked {
-            padding: 22px 18px;
-            border-radius: 14px;
+        /* ── 비로그인 잠금: 헤더 아래를 흐리게 덮는다 ── */
+        .gated { position: relative; }
+        .gated.locked .layout {
+            filter: blur(7px);
+            pointer-events: none;
+            user-select: none;
+        }
+        .gate-veil {
+            position: absolute;
+            inset: 0;
+            z-index: 5;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+        }
+        /* 내용이 길어도 안내 문구가 화면 가운데 머물도록 */
+        .gate-box {
+            position: sticky;
+            top: 34vh;
+            padding: 32px 40px;
+            border-radius: 22px;
             text-align: center;
-            background: rgba(124, 92, 255, 0.06);
-            border: 1px dashed rgba(124, 92, 255, 0.4);
+            background: rgba(10, 10, 18, 0.55);
+            border: 1px solid var(--border);
+            backdrop-filter: blur(6px);
+            -webkit-backdrop-filter: blur(6px);
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
         }
-        .nav-locked .lock-icon { font-size: 1.6rem; }
-        .nav-locked .lock-text {
-            margin: 6px 0 16px;
-            font-size: 0.85rem;
-            color: var(--muted);
+        .gate-box .gate-icon { font-size: 2rem; }
+        .gate-box .gate-text {
+            margin: 8px 0 20px;
+            font-size: 1.15rem;
+            font-weight: 800;
+            letter-spacing: -0.01em;
         }
-        .lock-btn {
-            display: block;
-            padding: 10px 14px;
+        .gate-actions { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; }
+        .gate-btn {
+            padding: 11px 24px;
             border-radius: 12px;
-            font-size: 0.85rem;
+            font-size: 0.88rem;
             font-weight: 700;
             text-decoration: none;
             transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
         }
-        .lock-btn + .lock-btn { margin-top: 8px; }
-        .lock-btn--primary {
+        .gate-btn--primary {
             color: #fff;
             background: linear-gradient(90deg, var(--accent-1), var(--accent-2));
-            box-shadow: 0 8px 22px rgba(124, 92, 255, 0.35);
+            box-shadow: 0 8px 24px rgba(124, 92, 255, 0.4);
         }
-        .lock-btn--ghost {
+        .gate-btn--ghost {
             color: var(--text);
-            background: rgba(255, 255, 255, 0.05);
+            background: rgba(255, 255, 255, 0.06);
             border: 1px solid var(--border);
         }
-        .lock-btn:hover { transform: translateY(-2px); }
+        .gate-btn:hover { transform: translateY(-3px); }
+
+        /* ── 오늘의 일정 ── */
+        .today-date {
+            font-size: 0.84rem;
+            color: var(--muted);
+            margin-bottom: 14px;
+        }
+        .today-list {
+            list-style: none;
+            display: grid;
+            gap: 8px;
+        }
+        .today-list li {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: 12px;
+            font-size: 0.88rem;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border);
+        }
+        .today-list .time {
+            flex-shrink: 0;
+            font-variant-numeric: tabular-nums;
+            font-size: 0.78rem;
+            color: var(--muted);
+        }
+        .today-list .name { font-weight: 700; }
+        /* 이미 끝난 수업은 눈에 덜 띄게 */
+        .today-list li.past { opacity: 0.4; }
+        .today-list li.past .name { text-decoration: line-through; }
+        /* 지금 진행 중인 수업을 가장 강조 */
+        .today-list li.now {
+            background: linear-gradient(135deg, rgba(124, 92, 255, 0.2), rgba(0, 212, 255, 0.13));
+            border-color: rgba(124, 92, 255, 0.55);
+            box-shadow: 0 8px 26px rgba(124, 92, 255, 0.25);
+        }
+        .today-list li.now .name { font-size: 0.95rem; }
+        .now-tag {
+            margin-left: auto;
+            flex-shrink: 0;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 3px 11px;
+            border-radius: 999px;
+            font-size: 0.7rem;
+            font-weight: 800;
+            color: #fff;
+            background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+        }
+        .now-tag .dot {
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            background: #fff;
+            animation: pulse 1.4s infinite;
+        }
+        .next-tag {
+            margin-left: auto;
+            flex-shrink: 0;
+            font-size: 0.7rem;
+            font-weight: 700;
+            color: var(--accent-2);
+        }
+        .today-empty {
+            padding: 26px 20px;
+            border-radius: 14px;
+            text-align: center;
+            font-size: 0.92rem;
+            color: var(--muted);
+            background: rgba(74, 222, 128, 0.07);
+            border: 1px dashed rgba(74, 222, 128, 0.35);
+        }
 
         /* ── main ── */
         .news {
@@ -308,6 +402,7 @@
             font-size: 0.85rem;
             color: var(--muted);
         }
+        .best-cut .cut-link { display: block; text-decoration: none; }
 
         /* ── aside ── */
         .info-item {
@@ -383,47 +478,28 @@
             <p class="tagline"><span class="typing" id="typing"></span></p>
         </header>
 
+        <!-- 로그인 전에는 이 안쪽 전체가 흐리게 덮인다 -->
+        <div class="gated" id="gated">
         <div class="layout">
             <nav class="panel site-nav">
                 <h2>📁 <span class="accent">바로가기 메뉴</span></h2>
-
-                <!-- 메뉴는 로그인한 회원에게만 열어준다 -->
-                <ul data-auth="in" hidden>
+                <ul>
                     <li><a href="myProfile.html" class="nav-link">👤 소개 <span class="en">Profile</span></a></li>
                     <li><a href="myClass.html" class="nav-link">📅 수업 시간표 <span class="en">Class</span></a></li>
                     <li><a href="myHoliday.html" class="nav-link">🏖️ 휴일 계획 <span class="en">Holiday</span></a></li>
                     <li><a href="myTrip.html" class="nav-link">🌍 여행 앨범 <span class="en">Album</span></a></li>
                     <li><a href="signUp.html" class="nav-link">✍️ 회원가입 <span class="en">Sign Up</span></a></li>
                 </ul>
-
-                <div class="nav-locked" data-auth="out" hidden>
-                    <p class="lock-icon">🔒</p>
-                    <p class="lock-text">로그인하면 메뉴가 열립니다.</p>
-                    <a href="logIn.html" class="lock-btn lock-btn--primary">🔑 로그인</a>
-                    <a href="signUp.html" class="lock-btn lock-btn--ghost">✍️ 회원가입</a>
-                </div>
             </nav>
 
             <main class="panel site-main">
-                <h2>📌 <span class="accent">오늘의 주요 소식</span></h2>
-
-                <article class="news">
-                    <span class="news-tag">업데이트</span>
-                    <h3>여행 앨범에 동영상 추가 완료!</h3>
-                    <p>
-                        홋카이도 대설산 단락 아래에 멋진 브이로그 영상을 추가했습니다.
-                        이제 소리와 영상으로 여행을 추억할 수 있습니다.
-                    </p>
-                    <time datetime="2026-06-11">작성일: 2026년 6월 11일</time>
-                </article>
+                <h2>📅 <span class="accent">오늘의 일정</span></h2>
+                <p class="today-date" id="todayDate"></p>
+                <div id="todayBox"></div>
 
                 <section class="best-cut">
-                    <h2>📷 <span class="accent">이달의 베스트 컷</span></h2>
-                    <figure>
-                        <img src="../media/lijiang-gorge.jpg"
-                             alt="중국 리장 호도협의 웅장한 협곡 풍경">
-                        <figcaption>중국 리장 호도협의 웅장한 협곡 모습 (2025년 촬영)</figcaption>
-                    </figure>
+                    <h2>📷 <span class="accent">여행 앨범 한 컷</span></h2>
+                    <figure id="albumCut"></figure>
                 </section>
             </main>
 
@@ -457,6 +533,18 @@
             </aside>
         </div>
 
+            <div class="gate-veil" data-auth="out" hidden>
+                <div class="gate-box">
+                    <p class="gate-icon">🔒</p>
+                    <p class="gate-text">로그인 후 이용해보세요</p>
+                    <div class="gate-actions">
+                        <a href="logIn.html" class="gate-btn gate-btn--primary">🔑 로그인</a>
+                        <a href="signUp.html" class="gate-btn gate-btn--ghost">✍️ 회원가입</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <footer class="site-footer">
             <p data-auth="in" hidden>이메일 문의: <span data-personal="email"></span></p>
             <p data-auth="out" hidden>이메일 문의: 로그인하면 회원님의 이메일이 표시됩니다.</p>
@@ -465,7 +553,106 @@
     </div>
 
     <script src="../js/auth.js"></script>
+    <script src="../js/timetable.js"></script>
     <script>
+        // ── 오늘의 일정 ──
+        const todayDate = document.getElementById("todayDate");
+        const todayBox = document.getElementById("todayBox");
+
+        function renderToday() {
+            const today = Timetable.today();
+
+            todayDate.textContent = today.date.toLocaleDateString("ko-KR", {
+                year: "numeric", month: "long", day: "numeric"
+            }) + " " + today.dayName;
+
+            if (!today.hasClass) {
+                todayBox.replaceChildren(
+                    Object.assign(document.createElement("p"), {
+                        className: "today-empty",
+                        textContent: "🎉 오늘은 수업이 없습니다. 푹 쉬세요!"
+                    })
+                );
+                return;
+            }
+
+            const list = document.createElement("ul");
+            list.className = "today-list";
+
+            // 아직 시작하지 않은 수업 중 첫 번째에만 "다음" 표시를 붙인다
+            const nextIndex = today.items.findIndex((item) => item.state === "next");
+
+            today.items.forEach((item, i) => {
+                const li = document.createElement("li");
+                li.className = item.state;
+
+                const time = document.createElement("span");
+                time.className = "time";
+                time.textContent = item.start + " - " + item.end;
+
+                const name = document.createElement("span");
+                name.className = "name";
+                name.textContent = item.icon + " " + item.title;
+
+                li.append(time, name);
+
+                if (item.state === "now") {
+                    const tag = document.createElement("span");
+                    tag.className = "now-tag";
+                    tag.innerHTML = '<span class="dot"></span>진행 중';
+                    li.append(tag);
+                } else if (i === nextIndex) {
+                    const tag = document.createElement("span");
+                    tag.className = "next-tag";
+                    tag.textContent = "다음 →";
+                    li.append(tag);
+                }
+
+                list.append(li);
+            });
+
+            todayBox.replaceChildren(list);
+        }
+
+        renderToday();
+        // 수업이 바뀌는 순간을 놓치지 않도록 1분마다 다시 그린다
+        setInterval(renderToday, 60000);
+
+        // ── 여행 앨범 한 컷 (날짜에 따라 돌아가며 보여준다) ──
+        const ALBUM = [
+            { src: "../media/lijiang-gorge.jpg", alt: "중국 리장 호도협의 웅장한 협곡 풍경",
+              caption: "중국 리장 호도협의 웅장한 협곡 모습 (2025년 촬영)" },
+            { src: "../media/cebu-night.jpg", alt: "필리핀 세부의 불빛이 가득한 밤 스카이라인",
+              caption: "필리핀 세부의 밤 스카이라인 (2024년 촬영)" },
+            { src: "../media/hokkaido.jpg", alt: "눈으로 덮인 홋카이도 대설산의 능선",
+              caption: "눈으로 덮인 홋카이도 대설산 (2025년 촬영)" }
+        ];
+
+        function renderAlbumCut() {
+            const dayNumber = Math.floor(Date.now() / 86400000);
+            const cut = ALBUM[dayNumber % ALBUM.length];
+
+            const link = document.createElement("a");
+            link.href = "myTrip.html";
+            link.className = "cut-link";
+
+            const img = document.createElement("img");
+            img.src = cut.src;
+            img.alt = cut.alt;
+
+            const caption = document.createElement("figcaption");
+            caption.textContent = cut.caption + " · 앨범 전체 보기 →";
+
+            link.append(img);
+            document.getElementById("albumCut").replaceChildren(link, caption);
+        }
+        renderAlbumCut();
+
+        // ── 로그인 전에는 헤더 아래를 흐리게 ──
+        document.addEventListener("auth:change", (e) => {
+            document.getElementById("gated").classList.toggle("locked", !e.detail.user);
+        });
+
         // 타이핑 효과
         const phrases = [
             "저의 프로필, 학습 내용, 여행 기록을 모아둔 Hub 페이지입니다.",
