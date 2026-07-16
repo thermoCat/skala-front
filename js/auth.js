@@ -205,7 +205,8 @@
                 '<button type="button" class="auth-btn auth-btn--ghost" id="auth-logout">로그아웃</button>';
             document.getElementById("auth-logout").addEventListener("click", function () {
                 logout();
-                location.reload();
+                // 개인 정보가 있는 페이지에 남지 않도록 메인 Hub로 보낸다
+                location.href = pageHref("index.html");
             });
         } else {
             box.innerHTML =
@@ -252,22 +253,51 @@
         document.dispatchEvent(new CustomEvent("auth:change", { detail: { user: currentUser() } }));
     }
 
-    /* ── 여러 줄 입력 파싱 ───────────────────── */
+    /* ── 번호가 붙은 입력칸 다루기 ───────────── */
+    // 좋아하는 것, 할 일처럼 칸을 정해두고 받는 항목을 읽고 쓴다.
+    // 예: like1, like2, like3 → ["바이크", "야식"]  (빈 칸은 건너뛴다)
 
-    // "한 줄에 하나" 형식 → 배열
-    function parseLines(text) {
-        return (text || "").split("\n")
-            .map(function (line) { return line.trim(); })
-            .filter(Boolean);
+    function collectSlots(form, prefix, count) {
+        var out = [];
+        for (var i = 1; i <= count; i++) {
+            var el = form.elements[prefix + i];
+            var value = el ? el.value.trim() : "";
+            if (value) out.push(value);
+        }
+        return out;
     }
 
-    // "단어: 설명" 형식 → [{ term, desc }]
-    function parseTerms(text) {
-        return parseLines(text).map(function (line) {
-            var at = line.indexOf(":");
-            if (at === -1) return { term: line, desc: "" };
-            return { term: line.slice(0, at).trim(), desc: line.slice(at + 1).trim() };
-        }).filter(function (item) { return item.term; });
+    // 단어와 설명이 짝을 이루는 칸을 읽는다. 단어가 비면 그 줄은 건너뛴다.
+    function collectPairs(form, termPrefix, descPrefix, count) {
+        var out = [];
+        for (var i = 1; i <= count; i++) {
+            var termEl = form.elements[termPrefix + i];
+            var descEl = form.elements[descPrefix + i];
+            var term = termEl ? termEl.value.trim() : "";
+            if (!term) continue;
+            out.push({ term: term, desc: descEl ? descEl.value.trim() : "" });
+        }
+        return out;
+    }
+
+    // 저장된 값을 다시 칸에 채워 넣는다 (수정 창에서 사용)
+    function fillSlots(form, prefix, values, count) {
+        values = values || [];
+        for (var i = 1; i <= count; i++) {
+            var el = form.elements[prefix + i];
+            if (el) el.value = values[i - 1] || "";
+        }
+    }
+
+    function fillPairs(form, termPrefix, descPrefix, pairs, count) {
+        pairs = pairs || [];
+        for (var i = 1; i <= count; i++) {
+            var pair = pairs[i - 1] || { term: "", desc: "" };
+            var termEl = form.elements[termPrefix + i];
+            var descEl = form.elements[descPrefix + i];
+            if (termEl) termEl.value = pair.term || "";
+            if (descEl) descEl.value = pair.desc || "";
+        }
     }
 
     /* ── 공개 API ───────────────────────────── */
@@ -282,8 +312,10 @@
         currentUser: currentUser,
         field: field,
         refresh: refresh,
-        parseLines: parseLines,
-        parseTerms: parseTerms,
+        collectSlots: collectSlots,
+        collectPairs: collectPairs,
+        fillSlots: fillSlots,
+        fillPairs: fillPairs,
         getPhotos: getPhotos,
         savePhotos: savePhotos,
         labels: { gender: GENDER_LABEL, interest: INTEREST_LABEL, route: ROUTE_LABEL }

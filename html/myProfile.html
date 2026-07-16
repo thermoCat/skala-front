@@ -243,22 +243,24 @@
 
         /* ── 로그인 사용자 정보 ── */
         .me {
-            position: relative;
             margin-top: 26px;
             padding: 22px 24px;
             border-radius: 18px;
             background: rgba(255, 255, 255, 0.04);
             border: 1px solid var(--border);
         }
+
+        /* 카드 전체 기준 오른쪽 위에 놓는다 */
         .edit-btn {
             position: absolute;
-            top: 18px;
-            right: 18px;
-            padding: 8px 16px;
+            top: clamp(24px, 3vw, 34px);
+            right: clamp(24px, 3vw, 34px);
+            z-index: 2;
+            padding: 10px 20px;
             border-radius: 999px;
             border: 1px solid var(--border);
             font-family: inherit;
-            font-size: 0.78rem;
+            font-size: 0.82rem;
             font-weight: 700;
             color: var(--text);
             cursor: pointer;
@@ -270,7 +272,7 @@
             background: rgba(124, 92, 255, 0.16);
             border-color: rgba(124, 92, 255, 0.5);
         }
-        .me-quote { padding-right: 84px; }
+        .edit-btn:active { transform: translateY(0); }
 
         /* ── 수정 창 ── */
         dialog {
@@ -337,6 +339,13 @@
             border-color: rgba(124, 92, 255, 0.6);
             box-shadow: 0 0 0 4px rgba(124, 92, 255, 0.15);
         }
+        /* 번호가 붙은 입력칸 */
+        .slots { display: grid; gap: 8px; }
+        .pair { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr); gap: 8px; }
+        @media (max-width: 520px) {
+            .pair { grid-template-columns: 1fr; }
+        }
+
         .dlg-choices { display: flex; flex-wrap: wrap; gap: 8px; }
         .dlg-choice {
             display: inline-flex;
@@ -474,6 +483,8 @@
     <div id="auth-area"></div>
 
     <main class="card">
+        <button type="button" class="edit-btn" id="editBtn" data-auth="in" hidden>✏️ 프로필 수정</button>
+
         <div class="badge"><span class="dot"></span>SKALA FRONTEND · MY PROFILE</div>
         <h1>👋 안녕하세요!
             <span class="gradient"><span data-personal="name" data-fallback="저">저</span><span data-josa="을/를">를</span> 소개합니다</span>
@@ -482,7 +493,6 @@
 
         <!-- 로그인 상태: 회원가입 때 입력한 내용을 그대로 보여준다 -->
         <div class="me" data-auth="in" hidden>
-            <button type="button" class="edit-btn" id="editBtn">✏️ 수정</button>
             <p class="me-quote" data-personal="intro"
                data-fallback="아직 한 줄 소개를 작성하지 않았습니다."></p>
             <div class="me-grid">
@@ -562,21 +572,42 @@
             </div>
 
             <div class="dlg-field">
-                <label for="eLikes">내가 좋아하는 것</label>
-                <textarea id="eLikes" placeholder="바이크 🏍️&#10;맛있는 음식 🍔"></textarea>
-                <p class="tip">한 줄에 하나씩 적어주세요.</p>
+                <label for="like1">내가 좋아하는 것</label>
+                <div class="slots">
+                    <input type="text" id="like1" name="like1" maxlength="40" placeholder="1. 예: 바이크 🏍️">
+                    <input type="text" name="like2" maxlength="40" placeholder="2. 예: 맛있는 음식 🍔">
+                    <input type="text" name="like3" maxlength="40" placeholder="3. 예: 주말 코딩 💻">
+                </div>
+                <p class="tip">최대 3개까지 적을 수 있습니다. 비워둔 칸은 표시되지 않습니다.</p>
             </div>
 
             <div class="dlg-field">
-                <label for="eTodos">올해 할 일</label>
-                <textarea id="eTodos" placeholder="한 달에 책 한 권씩 읽기 📚"></textarea>
+                <label for="todo1">올해 할 일</label>
+                <div class="slots">
+                    <input type="text" id="todo1" name="todo1" maxlength="40" placeholder="1. 예: 한 달에 책 한 권씩 읽기 📚">
+                    <input type="text" name="todo2" maxlength="40" placeholder="2. 예: 꾸준히 운동해서 체력 키우기 💪">
+                    <input type="text" name="todo3" maxlength="40" placeholder="3. 예: 새로운 언어 배우기 💻">
+                </div>
                 <p class="tip">적은 순서대로 번호가 매겨집니다.</p>
             </div>
 
             <div class="dlg-field">
-                <label for="eWords">나를 설명하는 단어</label>
-                <textarea id="eWords" placeholder="🏃 호기심: 새로운 기술을 보면 직접 해봐야 합니다."></textarea>
-                <p class="tip">콜론(:) 앞은 단어, 뒤는 설명입니다.</p>
+                <label for="wordTerm1">나를 설명하는 단어</label>
+                <div class="slots">
+                    <div class="pair">
+                        <input type="text" id="wordTerm1" name="wordTerm1" maxlength="20" placeholder="1. 단어">
+                        <input type="text" name="wordDesc1" maxlength="80" placeholder="설명">
+                    </div>
+                    <div class="pair">
+                        <input type="text" name="wordTerm2" maxlength="20" placeholder="2. 단어">
+                        <input type="text" name="wordDesc2" maxlength="80" placeholder="설명">
+                    </div>
+                    <div class="pair">
+                        <input type="text" name="wordTerm3" maxlength="20" placeholder="3. 단어">
+                        <input type="text" name="wordDesc3" maxlength="80" placeholder="설명">
+                    </div>
+                </div>
+                <p class="tip">단어를 비워두면 그 줄은 표시되지 않습니다.</p>
             </div>
 
             <div class="dlg-actions">
@@ -650,7 +681,9 @@
         const dialog = document.getElementById("editDialog");
         const toast = document.getElementById("toast");
 
-        // 화면 → 입력칸 채우기
+        const editForm = document.getElementById("editForm");
+
+        // 저장된 값 → 입력칸 채우기
         function fillForm() {
             const user = Auth.currentUser();
             if (!user) return;
@@ -658,10 +691,10 @@
             document.getElementById("eName").value = user.name || "";
             document.getElementById("eBirth").value = user.birth || "";
             document.getElementById("eIntro").value = user.intro || "";
-            document.getElementById("eLikes").value = (user.likes || []).join("\n");
-            document.getElementById("eTodos").value = (user.todos || []).join("\n");
-            document.getElementById("eWords").value = (user.words || [])
-                .map((w) => w.term + ": " + w.desc).join("\n");
+
+            Auth.fillSlots(editForm, "like", user.likes, 3);
+            Auth.fillSlots(editForm, "todo", user.todos, 3);
+            Auth.fillPairs(editForm, "wordTerm", "wordDesc", user.words, 3);
 
             document.querySelectorAll("input[name='eGender']").forEach((el) => {
                 el.checked = el.value === user.gender;
@@ -683,7 +716,7 @@
 
         document.getElementById("cancelBtn").addEventListener("click", () => dialog.close());
 
-        document.getElementById("editForm").addEventListener("submit", () => {
+        editForm.addEventListener("submit", () => {
             const user = Auth.currentUser();
             if (!user) return;
 
@@ -697,9 +730,9 @@
                 gender: checked("eGender")[0] || "",
                 interests: checked("eInterest"),
                 intro: document.getElementById("eIntro").value.trim(),
-                likes: Auth.parseLines(document.getElementById("eLikes").value),
-                todos: Auth.parseLines(document.getElementById("eTodos").value),
-                words: Auth.parseTerms(document.getElementById("eWords").value)
+                likes: Auth.collectSlots(editForm, "like", 3),
+                todos: Auth.collectSlots(editForm, "todo", 3),
+                words: Auth.collectPairs(editForm, "wordTerm", "wordDesc", 3)
             });
 
             // 바뀐 내용을 화면에 즉시 반영한다

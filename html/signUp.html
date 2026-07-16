@@ -284,6 +284,13 @@
             color: var(--muted);
         }
 
+        /* ── 번호가 붙은 입력칸 ── */
+        .slots { display: grid; gap: 8px; }
+        .pair { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.6fr); gap: 8px; }
+        @media (max-width: 560px) {
+            .pair { grid-template-columns: 1fr; }
+        }
+
         /* ── 폼 오류 ── */
         .form-error {
             display: none;
@@ -488,24 +495,42 @@
                 </div>
 
                 <div class="field stack">
-                    <label for="likes">내가 좋아하는 것</label>
-                    <textarea id="likes" name="likes"
-                              placeholder="한 줄에 하나씩 적어주세요&#10;바이크 🏍️&#10;맛있는 음식 🍔"></textarea>
-                    <p class="hint">한 줄에 하나씩 쓰면 소개 페이지에 목록으로 표시됩니다.</p>
+                    <label for="like1">내가 좋아하는 것</label>
+                    <div class="slots">
+                        <input type="text" id="like1" name="like1" maxlength="40" placeholder="1. 예: 바이크 🏍️">
+                        <input type="text" id="like2" name="like2" maxlength="40" placeholder="2. 예: 맛있는 음식 🍔">
+                        <input type="text" id="like3" name="like3" maxlength="40" placeholder="3. 예: 주말 코딩 💻">
+                    </div>
+                    <p class="hint">최대 3개까지 적을 수 있습니다. 비워둔 칸은 표시되지 않습니다.</p>
                 </div>
 
                 <div class="field stack">
-                    <label for="todos">올해 할 일</label>
-                    <textarea id="todos" name="todos"
-                              placeholder="한 줄에 하나씩 적어주세요&#10;한 달에 책 한 권씩 읽기 📚&#10;꾸준히 운동해서 체력 키우기 💪"></textarea>
+                    <label for="todo1">올해 할 일</label>
+                    <div class="slots">
+                        <input type="text" id="todo1" name="todo1" maxlength="40" placeholder="1. 예: 한 달에 책 한 권씩 읽기 📚">
+                        <input type="text" id="todo2" name="todo2" maxlength="40" placeholder="2. 예: 꾸준히 운동해서 체력 키우기 💪">
+                        <input type="text" id="todo3" name="todo3" maxlength="40" placeholder="3. 예: 새로운 언어 배우기 💻">
+                    </div>
                     <p class="hint">적은 순서대로 번호가 매겨집니다.</p>
                 </div>
 
                 <div class="field stack">
-                    <label for="words">나를 설명하는 단어</label>
-                    <textarea id="words" name="words"
-                              placeholder="단어: 설명 형식으로 한 줄에 하나씩 적어주세요&#10;🏃 호기심: 새로운 기술을 보면 직접 해봐야 직성이 풀립니다.&#10;☕ 꾸준함: 작은 계획이라도 세우고 지키려 노력합니다."></textarea>
-                    <p class="hint">콜론(:) 앞은 단어, 뒤는 설명으로 나뉩니다.</p>
+                    <label for="wordTerm1">나를 설명하는 단어</label>
+                    <div class="slots">
+                        <div class="pair">
+                            <input type="text" id="wordTerm1" name="wordTerm1" maxlength="20" placeholder="1. 단어 (예: 🏃 호기심)">
+                            <input type="text" name="wordDesc1" maxlength="80" placeholder="설명 (예: 새로운 기술은 직접 해봐야 합니다)">
+                        </div>
+                        <div class="pair">
+                            <input type="text" name="wordTerm2" maxlength="20" placeholder="2. 단어 (예: ☕ 꾸준함)">
+                            <input type="text" name="wordDesc2" maxlength="80" placeholder="설명 (예: 작은 계획이라도 지키려 노력합니다)">
+                        </div>
+                        <div class="pair">
+                            <input type="text" name="wordTerm3" maxlength="20" placeholder="3. 단어 (예: 🎨 크리에이티브)">
+                            <input type="text" name="wordDesc3" maxlength="80" placeholder="설명 (예: 보기 좋은 결과물을 좋아합니다)">
+                        </div>
+                    </div>
+                    <p class="hint">단어를 비워두면 그 줄은 표시되지 않습니다.</p>
                 </div>
             </fieldset>
 
@@ -592,9 +617,9 @@
                 interests: data.getAll("interest"),
                 route: data.get("route"),
                 intro: data.get("intro").trim(),
-                likes: Auth.parseLines(data.get("likes")),
-                todos: Auth.parseLines(data.get("todos")),
-                words: Auth.parseTerms(data.get("words")),
+                likes: Auth.collectSlots(form, "like", 3),
+                todos: Auth.collectSlots(form, "todo", 3),
+                words: Auth.collectPairs(form, "wordTerm", "wordDesc", 3),
                 joinedAt: new Date().toISOString()
             });
 
