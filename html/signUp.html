@@ -486,6 +486,27 @@
                               placeholder="여기에 내용을 입력하세요 (최대 200자)"></textarea>
                     <p class="counter"><span id="count">0</span> / 200자</p>
                 </div>
+
+                <div class="field stack">
+                    <label for="likes">내가 좋아하는 것</label>
+                    <textarea id="likes" name="likes"
+                              placeholder="한 줄에 하나씩 적어주세요&#10;바이크 🏍️&#10;맛있는 음식 🍔"></textarea>
+                    <p class="hint">한 줄에 하나씩 쓰면 소개 페이지에 목록으로 표시됩니다.</p>
+                </div>
+
+                <div class="field stack">
+                    <label for="todos">올해 할 일</label>
+                    <textarea id="todos" name="todos"
+                              placeholder="한 줄에 하나씩 적어주세요&#10;한 달에 책 한 권씩 읽기 📚&#10;꾸준히 운동해서 체력 키우기 💪"></textarea>
+                    <p class="hint">적은 순서대로 번호가 매겨집니다.</p>
+                </div>
+
+                <div class="field stack">
+                    <label for="words">나를 설명하는 단어</label>
+                    <textarea id="words" name="words"
+                              placeholder="단어: 설명 형식으로 한 줄에 하나씩 적어주세요&#10;🏃 호기심: 새로운 기술을 보면 직접 해봐야 직성이 풀립니다.&#10;☕ 꾸준함: 작은 계획이라도 세우고 지키려 노력합니다."></textarea>
+                    <p class="hint">콜론(:) 앞은 단어, 뒤는 설명으로 나뉩니다.</p>
+                </div>
             </fieldset>
 
             <p class="form-error" id="formError">⚠️ <span id="formErrorText"></span></p>
@@ -571,6 +592,9 @@
                 interests: data.getAll("interest"),
                 route: data.get("route"),
                 intro: data.get("intro").trim(),
+                likes: Auth.parseLines(data.get("likes")),
+                todos: Auth.parseLines(data.get("todos")),
+                words: Auth.parseTerms(data.get("words")),
                 joinedAt: new Date().toISOString()
             });
 

@@ -211,6 +211,42 @@
             color: var(--muted);
         }
 
+        /* 비로그인 상태의 잠긴 메뉴 */
+        .nav-locked {
+            padding: 22px 18px;
+            border-radius: 14px;
+            text-align: center;
+            background: rgba(124, 92, 255, 0.06);
+            border: 1px dashed rgba(124, 92, 255, 0.4);
+        }
+        .nav-locked .lock-icon { font-size: 1.6rem; }
+        .nav-locked .lock-text {
+            margin: 6px 0 16px;
+            font-size: 0.85rem;
+            color: var(--muted);
+        }
+        .lock-btn {
+            display: block;
+            padding: 10px 14px;
+            border-radius: 12px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            text-decoration: none;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+        }
+        .lock-btn + .lock-btn { margin-top: 8px; }
+        .lock-btn--primary {
+            color: #fff;
+            background: linear-gradient(90deg, var(--accent-1), var(--accent-2));
+            box-shadow: 0 8px 22px rgba(124, 92, 255, 0.35);
+        }
+        .lock-btn--ghost {
+            color: var(--text);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+        }
+        .lock-btn:hover { transform: translateY(-2px); }
+
         /* ── main ── */
         .news {
             padding: 20px 22px;
@@ -350,14 +386,22 @@
         <div class="layout">
             <nav class="panel site-nav">
                 <h2>📁 <span class="accent">바로가기 메뉴</span></h2>
-                <ul>
+
+                <!-- 메뉴는 로그인한 회원에게만 열어준다 -->
+                <ul data-auth="in" hidden>
                     <li><a href="myProfile.html" class="nav-link">👤 소개 <span class="en">Profile</span></a></li>
                     <li><a href="myClass.html" class="nav-link">📅 수업 시간표 <span class="en">Class</span></a></li>
                     <li><a href="myHoliday.html" class="nav-link">🏖️ 휴일 계획 <span class="en">Holiday</span></a></li>
                     <li><a href="myTrip.html" class="nav-link">🌍 여행 앨범 <span class="en">Album</span></a></li>
                     <li><a href="signUp.html" class="nav-link">✍️ 회원가입 <span class="en">Sign Up</span></a></li>
-                    <li data-auth="out" hidden><a href="logIn.html" class="nav-link">🔑 로그인 <span class="en">Log In</span></a></li>
                 </ul>
+
+                <div class="nav-locked" data-auth="out" hidden>
+                    <p class="lock-icon">🔒</p>
+                    <p class="lock-text">로그인하면 메뉴가 열립니다.</p>
+                    <a href="logIn.html" class="lock-btn lock-btn--primary">🔑 로그인</a>
+                    <a href="signUp.html" class="lock-btn lock-btn--ghost">✍️ 회원가입</a>
+                </div>
             </nav>
 
             <main class="panel site-main">

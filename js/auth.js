@@ -134,6 +134,9 @@
     /* ── 화면 반영 ──────────────────────────── */
 
     var STYLE = [
+        // display를 지정한 요소(예: display:grid인 메뉴)는 hidden 속성만으로 숨겨지지 않는다.
+        // data-auth로 숨긴 영역이 새어 나오지 않도록 여기서 확실히 막는다.
+        "[hidden]{display:none !important}",
         ".auth-area{position:fixed;top:22px;right:24px;z-index:10;display:flex;align-items:center;gap:10px;",
         "animation:authIn .9s .3s ease both}",
         "@keyframes authIn{from{opacity:0;transform:translateY(-16px)}to{opacity:1;transform:translateY(0)}}",
@@ -152,7 +155,6 @@
         "font-size:.85rem;font-weight:700;color:#e8e8f0;background:rgba(255,255,255,.06);",
         "border:1px solid rgba(255,255,255,.12);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}",
         ".auth-who .dot{width:7px;height:7px;border-radius:50%;background:#4ade80;box-shadow:0 0 10px #4ade80}",
-        ".is-guest{color:#9a9ab0;font-style:italic}",
         "@media(max-width:560px){.auth-area{top:14px;right:14px;gap:6px}",
         ".auth-btn,.auth-who{padding:8px 14px;font-size:.78rem}}"
     ].join("");
@@ -202,11 +204,10 @@
     function applyPersonalization() {
         var user = currentUser();
 
+        // 값이 있든 없든 글꼴은 주변 텍스트와 같아야 하므로 스타일은 건드리지 않는다
         document.querySelectorAll("[data-personal]").forEach(function (el) {
             var value = field(user, el.dataset.personal);
-            var fallback = el.dataset.fallback || "";
-            el.textContent = value || fallback;
-            el.classList.toggle("is-guest", !value);
+            el.textContent = value || el.dataset.fallback || "";
         });
 
         // 앞 글자가 채워진 뒤에 조사를 맞춘다 (예: 장상민을 / 철수를)
@@ -227,6 +228,26 @@
     function refresh() {
         renderAuthArea();
         applyPersonalization();
+        // 목록처럼 속성만으로 못 그리는 부분은 각 페이지가 이 이벤트를 듣고 다시 그린다
+        document.dispatchEvent(new CustomEvent("auth:change", { detail: { user: currentUser() } }));
+    }
+
+    /* ── 여러 줄 입력 파싱 ───────────────────── */
+
+    // "한 줄에 하나" 형식 → 배열
+    function parseLines(text) {
+        return (text || "").split("\n")
+            .map(function (line) { return line.trim(); })
+            .filter(Boolean);
+    }
+
+    // "단어: 설명" 형식 → [{ term, desc }]
+    function parseTerms(text) {
+        return parseLines(text).map(function (line) {
+            var at = line.indexOf(":");
+            if (at === -1) return { term: line, desc: "" };
+            return { term: line.slice(0, at).trim(), desc: line.slice(at + 1).trim() };
+        }).filter(function (item) { return item.term; });
     }
 
     /* ── 공개 API ───────────────────────────── */
@@ -241,6 +262,8 @@
         currentUser: currentUser,
         field: field,
         refresh: refresh,
+        parseLines: parseLines,
+        parseTerms: parseTerms,
         labels: { gender: GENDER_LABEL, interest: INTEREST_LABEL, route: ROUTE_LABEL }
     };
 
