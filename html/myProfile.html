@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SKALA · 나의 소개</title>
+    <style>
+        :root {
+            --bg: #0a0a12;
+            --surface: rgba(255, 255, 255, 0.05);
+            --border: rgba(255, 255, 255, 0.1);
+            --text: #e8e8f0;
+            --muted: #9a9ab0;
+            --accent-1: #7c5cff;
+            --accent-2: #00d4ff;
+            --accent-3: #ff5c8a;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            min-height: 100vh;
+            background: var(--bg);
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", "Segoe UI", sans-serif;
+            line-height: 1.7;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 60px 24px 80px;
+            overflow-x: hidden;
+        }
+
+        /* ── 움직이는 오로라 배경 ── */
+        .aurora {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+        }
+        .aurora span {
+            position: absolute;
+            width: 55vmax;
+            height: 55vmax;
+            border-radius: 50%;
+            opacity: 0.32;
+            animation: drift 16s ease-in-out infinite alternate;
+        }
+        .aurora span:nth-child(1) {
+            background: radial-gradient(circle, var(--accent-1) 0%, transparent 70%);
+            top: -20vmax; left: -12vmax;
+        }
+        .aurora span:nth-child(2) {
+            background: radial-gradient(circle, var(--accent-2) 0%, transparent 70%);
+            bottom: -22vmax; right: -14vmax;
+            animation-delay: -8s;
+        }
+        .aurora span:nth-child(3) {
+            background: radial-gradient(circle, var(--accent-3) 0%, transparent 70%);
+            top: 40%; left: 55%;
+            width: 35vmax; height: 35vmax;
+            opacity: 0.18;
+            animation-delay: -4s;
+        }
+        @keyframes drift {
+            from { transform: translate(0, 0) scale(1); }
+            to   { transform: translate(7vmax, 5vmax) scale(1.2); }
+        }
+
+        /* ── 메인 카드 ── */
+        .card {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 780px;
+            padding: clamp(40px, 6vw, 64px) clamp(28px, 5vw, 60px);
+            border-radius: 28px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            box-shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
+            animation: fadeUp 0.9s ease both;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 18px;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.04);
+            font-size: 0.82rem;
+            letter-spacing: 0.16em;
+            color: var(--muted);
+            margin-bottom: 26px;
+        }
+        .badge .dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: #4ade80;
+            box-shadow: 0 0 12px #4ade80;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.35; }
+        }
+
+        h1 {
+            font-size: clamp(1.8rem, 5vw, 2.6rem);
+            font-weight: 900;
+            letter-spacing: -0.02em;
+            line-height: 1.3;
+        }
+        h1 .gradient {
+            background: linear-gradient(90deg, var(--accent-1), var(--accent-2), var(--accent-3), var(--accent-1));
+            background-size: 300% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: shine 6s linear infinite;
+        }
+        @keyframes shine {
+            to { background-position: 300% center; }
+        }
+
+        .intro {
+            margin-top: 14px;
+            color: var(--muted);
+            font-size: 1rem;
+        }
+
+        /* ── 섹션 ── */
+        section {
+            margin-top: 44px;
+            padding-top: 36px;
+            border-top: 1px solid var(--border);
+            animation: fadeUp 0.9s ease both;
+        }
+        section:nth-of-type(1) { animation-delay: 0.15s; }
+        section:nth-of-type(2) { animation-delay: 0.3s; }
+        section:nth-of-type(3) { animation-delay: 0.45s; }
+
+        h2 {
+            font-size: 1.35rem;
+            font-weight: 800;
+            margin-bottom: 18px;
+            letter-spacing: -0.01em;
+        }
+        h2 .accent {
+            background: linear-gradient(90deg, var(--accent-2), var(--accent-1));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+
+        /* ── ul: 좋아하는 음식 ── */
+        ul {
+            list-style: none;
+            display: grid;
+            gap: 10px;
+        }
+        ul li {
+            padding: 14px 20px;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border);
+            transition: transform 0.25s ease, border-color 0.25s ease, background 0.25s ease;
+        }
+        ul li:hover {
+            transform: translateX(8px);
+            border-color: rgba(124, 92, 255, 0.45);
+            background: rgba(124, 92, 255, 0.08);
+        }
+
+        /* ── ol: 올해 할 일 ── */
+        ol {
+            list-style: none;
+            counter-reset: todo;
+            display: grid;
+            gap: 10px;
+        }
+        ol li {
+            counter-increment: todo;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 14px 20px;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border);
+            transition: transform 0.25s ease, border-color 0.25s ease, background 0.25s ease;
+        }
+        ol li:hover {
+            transform: translateX(8px);
+            border-color: rgba(0, 212, 255, 0.45);
+            background: rgba(0, 212, 255, 0.07);
+        }
+        ol li::before {
+            content: counter(todo);
+            flex-shrink: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            font-weight: 800;
+            font-size: 0.9rem;
+            color: #fff;
+            background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+            box-shadow: 0 4px 14px rgba(124, 92, 255, 0.35);
+        }
+
+        /* ── dl: 나를 설명하는 단어들 ── */
+        dl {
+            display: grid;
+            gap: 14px;
+        }
+        .word {
+            padding: 18px 22px;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border);
+            transition: transform 0.25s ease, border-color 0.25s ease, background 0.25s ease;
+        }
+        .word:hover {
+            transform: translateY(-4px);
+            border-color: rgba(255, 92, 138, 0.45);
+            background: rgba(255, 92, 138, 0.06);
+        }
+        dt {
+            font-weight: 800;
+            font-size: 1.05rem;
+            margin-bottom: 6px;
+        }
+        dd {
+            color: var(--muted);
+            font-size: 0.93rem;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        footer {
+            position: relative;
+            z-index: 1;
+            margin-top: 40px;
+            font-size: 0.8rem;
+            color: var(--muted);
+            letter-spacing: 0.08em;
+        }
+        footer a {
+            color: var(--accent-2);
+            text-decoration: none;
+        }
+        footer a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="aurora">
+        <span></span><span></span><span></span>
+    </div>
+
+    <main class="card">
+        <div class="badge"><span class="dot"></span>SKALA FRONTEND · MY PROFILE</div>
+        <h1>👋 안녕하세요! <span class="gradient">저를 소개합니다</span></h1>
+        <p class="intro">아래는 제가 좋아하는 것들과 올해의 계획, 그리고 저를 표현하는 단어들입니다.</p>
+
+        <section>
+            <h2>😎 내가 <span class="accent">좋아하는 것</span></h2>
+            <ul>
+                <li>바이크 🏍️</li>
+                <li>멋진 👖</li>
+                <li>맛있는 음식🍔</li>
+            </ul>
+        </section>
+
+        <section>
+            <h2>📅 올해 <span class="accent">할 일</span></h2>
+            <ol>
+                <li>한달에 책 한 권씩 읽기 📚</li>
+                <li>꾸준히 운동해서 체력 키우기 💪</li>
+                <li>새로운 프로그래밍 언어 배우기 💻</li>
+                <li>어딘가에 소속되어 사람구실 하기 🙆‍♂️</li>
+            </ol>
+        </section>
+
+        <section>
+            <h2>✨ 나를 <span class="accent">설명하는 단어들</span></h2>
+            <dl>
+                <div class="word">
+                    <dt>🏃 호기심</dt>
+                    <dd>새로운 기술이나 흥미로운 트렌드를 보면 직접 경험해보고 배워야 직성이 풀립니다.</dd>
+                </div>
+                <div class="word">
+                    <dt>☕ 꾸준함</dt>
+                    <dd>매일 작은 계획이라도 세우고 그것을 지키기 위해 노력하는 성실함을 가지고 있습니다.</dd>
+                </div>
+                <div class="word">
+                    <dt>🎨 크리에이티브</dt>
+                    <dd>단순한 결과물보다는 사용자에게 더 나은 경험과 시각적인 즐거움을 주는 것을 좋아합니다.</dd>
+                </div>
+            </dl>
+        </section>
+    </main>
+
+    <footer>SKALA · Frontend Playground</footer>
+</body>
+</html>
