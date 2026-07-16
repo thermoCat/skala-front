@@ -331,6 +331,17 @@
             font-weight: 700;
             color: var(--accent-2);
         }
+        /* 휴일 계획 항목은 수업과 구분되도록 분홍 테두리를 준다 */
+        .today-list li.is-plan { border-color: rgba(255, 92, 138, 0.35); }
+        .plan-tag {
+            flex-shrink: 0;
+            font-size: 0.68rem;
+            font-weight: 800;
+            padding: 2px 9px;
+            border-radius: 999px;
+            color: #fff;
+            background: linear-gradient(135deg, var(--accent-3), var(--accent-1));
+        }
         .today-empty {
             padding: 26px 20px;
             border-radius: 14px;
@@ -439,6 +450,23 @@
         .info-item .v { font-weight: 700; }
         .info-item a { color: var(--accent-2); text-decoration: none; }
         .info-item a:hover { text-decoration: underline; }
+        .alarm-mini { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
+        .alarm-mini-btn {
+            padding: 6px 11px;
+            border-radius: 8px;
+            border: 1px solid var(--border);
+            font-family: inherit;
+            font-size: 0.74rem;
+            font-weight: 700;
+            cursor: pointer;
+            color: var(--text);
+            background: rgba(255, 255, 255, 0.05);
+            transition: background 0.2s ease, border-color 0.2s ease;
+        }
+        .alarm-mini-btn:hover { background: rgba(124, 92, 255, 0.15); border-color: rgba(124, 92, 255, 0.5); }
+        .alarm-mini-on { font-size: 0.74rem; font-weight: 700; color: #b8f5cd; }
+        .alarm-mini-off { font-size: 0.74rem; font-weight: 700; color: #ffc0d2; }
+
         #clock {
             font-variant-numeric: tabular-nums;
             font-weight: 800;
@@ -491,7 +519,7 @@
         <header class="site-header">
             <div class="badge"><span class="dot"></span>SKALA FRONTEND · MAIN HUB</div>
             <h1><span data-personal="name" data-fallback="SKALA">SKALA</span>의
-                <span class="gradient">유니버스</span> 🚀</h1>
+                <span class="gradient">SKALA 유니버스</span> 🚀</h1>
             <p class="tagline"><span class="typing" id="typing"></span></p>
         </header>
 
@@ -505,6 +533,7 @@
                     <li><a href="myClass.html" class="nav-link">📅 수업 시간표 <span class="en">Class</span></a></li>
                     <li><a href="myHoliday.html" class="nav-link">🏖️ 휴일 계획 <span class="en">Holiday</span></a></li>
                     <li><a href="myTrip.html" class="nav-link">🌍 여행 앨범 <span class="en">Album</span></a></li>
+                    <li><a href="myMemo.html" class="nav-link">📝 메모 <span class="en">Memo</span></a></li>
                     <!-- 이미 로그인한 회원에게는 회원가입 메뉴를 보여주지 않는다 -->
                     <li data-auth="out" hidden>
                         <a href="signUp.html" class="nav-link">✍️ 회원가입 <span class="en">Sign Up</span></a>
@@ -550,6 +579,10 @@
                         </a>
                     </span>
                 </div>
+                <div class="info-item" data-auth="in" hidden>
+                    <span class="k">🔔 입실·퇴실 알림 (평일 8:50 / 17:50)</span>
+                    <div class="alarm-mini" id="alarmMini"></div>
+                </div>
             </aside>
         </div>
 
@@ -574,41 +607,71 @@
 
     <script src="../js/auth.js"></script>
     <script src="../js/timetable.js"></script>
+    <script src="../js/alarms.js"></script>
     <script>
-        // ── 오늘의 일정 ──
+        function pad2(n) { return String(n).padStart(2, "0"); }
+        function localDateKey(d) { return d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate()); }
+
+        // ── 오늘의 일정 (수업 시간표 + 오늘 날짜의 휴일 계획을 합쳐서 보여준다) ──
         const todayDate = document.getElementById("todayDate");
         const todayBox = document.getElementById("todayBox");
 
         function renderToday() {
-            const today = Timetable.today();
+            const now = new Date();
+            const today = Timetable.today(now);
 
             todayDate.textContent = today.date.toLocaleDateString("ko-KR", {
                 year: "numeric", month: "long", day: "numeric"
             }) + " " + today.dayName;
 
-            if (!today.hasClass) {
+            // 수업 시간표 항목
+            const items = today.items.map((item) => ({
+                start: item.start, end: item.end, icon: item.icon, title: item.title,
+                state: item.state, isPlan: false
+            }));
+
+            // 오늘 날짜의 휴일 계획 (시간표와 무관하게, 시간이 있으면 그 시각 기준으로 끼워 넣는다)
+            const user = Auth.currentUser();
+            const plans = user ? (Auth.getHolidays(user.userId) || []) : [];
+            const todayKey = localDateKey(now);
+            const nowMins = now.getHours() * 60 + now.getMinutes();
+
+            plans.filter((p) => p.date === todayKey).forEach((p) => {
+                const mins = p.time ? Timetable.toMinutes(p.time) : -1;
+                items.push({
+                    start: p.time || "", end: "", icon: "📌", title: p.title,
+                    state: p.time ? (nowMins >= mins ? "past" : "next") : "next",
+                    isPlan: true, allDay: !p.time, sortMins: p.time ? mins : -1
+                });
+            });
+
+            if (!items.length) {
                 todayBox.replaceChildren(
                     Object.assign(document.createElement("p"), {
                         className: "today-empty",
-                        textContent: "🎉 오늘은 수업이 없습니다. 푹 쉬세요!"
+                        textContent: "🎉 오늘은 일정이 없습니다. 푹 쉬세요!"
                     })
                 );
                 return;
             }
 
+            // 시간 순으로 정렬한다 (하루 종일 계획은 맨 앞에 둔다)
+            items.forEach((it) => { if (it.sortMins === undefined) it.sortMins = Timetable.toMinutes(it.start); });
+            items.sort((a, b) => a.sortMins - b.sortMins);
+
             const list = document.createElement("ul");
             list.className = "today-list";
 
-            // 아직 시작하지 않은 수업 중 첫 번째에만 "다음" 표시를 붙인다
-            const nextIndex = today.items.findIndex((item) => item.state === "next");
+            // 아직 시작하지 않은 항목 중 첫 번째에만 "다음" 표시를 붙인다
+            const nextIndex = items.findIndex((item) => item.state === "next");
 
-            today.items.forEach((item, i) => {
+            items.forEach((item, i) => {
                 const li = document.createElement("li");
-                li.className = item.state;
+                li.className = item.state + (item.isPlan ? " is-plan" : "");
 
                 const time = document.createElement("span");
                 time.className = "time";
-                time.textContent = item.start + " - " + item.end;
+                time.textContent = item.allDay ? "하루 종일" : (item.end ? item.start + " - " + item.end : item.start);
 
                 const name = document.createElement("span");
                 name.className = "name";
@@ -616,7 +679,12 @@
 
                 li.append(time, name);
 
-                if (item.state === "now") {
+                if (item.isPlan) {
+                    const tag = document.createElement("span");
+                    tag.className = "plan-tag";
+                    tag.textContent = "휴일 계획";
+                    li.append(tag);
+                } else if (item.state === "now") {
                     const tag = document.createElement("span");
                     tag.className = "now-tag";
                     tag.innerHTML = '<span class="dot"></span>진행 중';
@@ -635,8 +703,34 @@
         }
 
         renderToday();
-        // 수업이 바뀌는 순간을 놓치지 않도록 1분마다 다시 그린다
+        // 수업/계획이 바뀌는 순간을 놓치지 않도록 1분마다 다시 그린다
         setInterval(renderToday, 60000);
+
+        // ── 입실·퇴실 알림 미니 위젯 ──
+        const alarmMini = document.getElementById("alarmMini");
+        function renderAlarmMini() {
+            if (!alarmMini) return;
+            const p = Alarms.permission();
+            if (p === "granted") {
+                alarmMini.innerHTML =
+                    '<span class="alarm-mini-on">🔔 켜짐</span>' +
+                    '<button type="button" class="alarm-mini-btn" id="alarmMiniTest">테스트</button>';
+                document.getElementById("alarmMiniTest").addEventListener("click", () => {
+                    Alarms.fire("🧪 테스트 알림", "이렇게 알림이 잘 뜨는지 확인해 보세요!", "test-" + Date.now());
+                });
+            } else if (p === "denied") {
+                alarmMini.innerHTML = '<span class="alarm-mini-off">🔕 브라우저에서 차단됨</span>';
+            } else if (p === "unsupported") {
+                alarmMini.innerHTML = '<span class="alarm-mini-off">지원 안 됨</span>';
+            } else {
+                alarmMini.innerHTML = '<button type="button" class="alarm-mini-btn" id="alarmMiniOn">🔔 알림 켜기</button>';
+                document.getElementById("alarmMiniOn").addEventListener("click", async () => {
+                    await Alarms.requestPermission();
+                    renderAlarmMini();
+                });
+            }
+        }
+        renderAlarmMini();
 
         // ── 여행 앨범 한 컷 ──
         // 내가 직접 올린 사진 중 날짜에 따라 하나를 보여준다.
@@ -682,12 +776,14 @@
             // 로그인 전에는 헤더 아래를 흐리게 덮는다
             document.getElementById("gated").classList.toggle("locked", !e.detail.user);
             renderAlbumCut();
+            renderToday();
+            renderAlarmMini();
         });
 
         // 타이핑 효과
         const phrases = [
-            "저의 프로필, 학습 내용, 여행 기록을 모아둔 Hub 페이지입니다.",
-            "왼쪽 메뉴에서 보고 싶은 페이지를 골라보세요.",
+            "학습 내용, 사진 기록을 모아둔 Skala Hub 페이지입니다.",
+            "왼쪽 메뉴에서 Skala 일상을 기록해 보세요",
             "오늘도 즐겁게 코딩해 볼까요?"
         ];
         const typingEl = document.getElementById("typing");

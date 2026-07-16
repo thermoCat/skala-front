@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SKALA · 나의 휴일 계획</title>
+    <style>
+        :root {
+            --bg: #0a0a12;
+            --surface: rgba(255, 255, 255, 0.05);
+            --border: rgba(255, 255, 255, 0.1);
+            --text: #e8e8f0;
+            --muted: #9a9ab0;
+            --accent-1: #7c5cff;
+            --accent-2: #00d4ff;
+            --accent-3: #ff5c8a;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            min-height: 100vh;
+            background: var(--bg);
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", "Segoe UI", sans-serif;
+            line-height: 1.7;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 92px 24px 80px;
+            overflow-x: hidden;
+        }
+
+        /* ── 움직이는 오로라 배경 ── */
+        .aurora { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+        .aurora span {
+            position: absolute; width: 55vmax; height: 55vmax; border-radius: 50%;
+            opacity: 0.3; animation: drift 16s ease-in-out infinite alternate;
+        }
+        .aurora span:nth-child(1) {
+            background: radial-gradient(circle, var(--accent-1) 0%, transparent 70%);
+            top: -20vmax; left: -12vmax;
+        }
+        .aurora span:nth-child(2) {
+            background: radial-gradient(circle, var(--accent-2) 0%, transparent 70%);
+            bottom: -22vmax; right: -14vmax; animation-delay: -8s;
+        }
+        .aurora span:nth-child(3) {
+            background: radial-gradient(circle, var(--accent-3) 0%, transparent 70%);
+            top: 40%; left: 55%; width: 35vmax; height: 35vmax;
+            opacity: 0.16; animation-delay: -4s;
+        }
+        @keyframes drift {
+            from { transform: translate(0, 0) scale(1); }
+            to   { transform: translate(7vmax, 5vmax) scale(1.2); }
+        }
+
+        /* ── 메인 카드 ── */
+        .card {
+            position: relative; z-index: 1; width: 100%; max-width: 760px;
+            padding: clamp(36px, 5vw, 56px); border-radius: 28px;
+            background: var(--surface); border: 1px solid var(--border);
+            backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            box-shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
+            animation: fadeUp 0.9s ease both;
+        }
+        .badge {
+            display: inline-flex; align-items: center; gap: 8px; padding: 7px 18px;
+            border-radius: 999px; border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.04); font-size: 0.82rem;
+            letter-spacing: 0.16em; color: var(--muted); margin-bottom: 22px;
+        }
+        .badge .dot {
+            width: 8px; height: 8px; border-radius: 50%; background: #4ade80;
+            box-shadow: 0 0 12px #4ade80; animation: pulse 2s infinite;
+        }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+
+        h1 { font-size: clamp(1.7rem, 4.5vw, 2.4rem); font-weight: 900; letter-spacing: -0.02em; }
+        h1 .gradient {
+            background: linear-gradient(90deg, var(--accent-1), var(--accent-2), var(--accent-3), var(--accent-1));
+            background-size: 300% auto; -webkit-background-clip: text; background-clip: text;
+            color: transparent; animation: shine 6s linear infinite;
+        }
+        @keyframes shine { to { background-position: 300% center; } }
+        .intro { margin-top: 12px; color: var(--muted); font-size: 0.98rem; }
+
+        section {
+            margin-top: 42px; padding-top: 34px; border-top: 1px solid var(--border);
+            animation: fadeUp 0.9s 0.15s ease both;
+        }
+        h2 { font-size: 1.3rem; font-weight: 800; margin-bottom: 8px; letter-spacing: -0.01em; }
+        h2 .accent {
+            background: linear-gradient(90deg, var(--accent-2), var(--accent-1));
+            -webkit-background-clip: text; background-clip: text; color: transparent;
+        }
+        .desc { color: var(--muted); font-size: 0.9rem; margin-bottom: 18px; }
+
+        /* ── 알림 안내 ── */
+        .alarm-box {
+            padding: 18px 20px; border-radius: 16px; margin-bottom: 22px;
+            background: rgba(124, 92, 255, 0.07); border: 1px solid rgba(124, 92, 255, 0.3);
+        }
+        .alarm-box p { font-size: 0.86rem; color: var(--muted); line-height: 1.6; }
+        .alarm-box p.limit { margin-top: 8px; font-size: 0.78rem; }
+        .alarm-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
+        .alarm-btn {
+            padding: 9px 16px; border-radius: 10px; border: 1px solid var(--border);
+            font-family: inherit; font-size: 0.82rem; font-weight: 700; cursor: pointer;
+            color: var(--text); background: rgba(255, 255, 255, 0.05);
+            transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+        }
+        .alarm-btn:hover { transform: translateY(-2px); background: rgba(124, 92, 255, 0.15); border-color: rgba(124, 92, 255, 0.5); }
+        .alarm-btn--primary { color: #fff; background: linear-gradient(90deg, var(--accent-1), var(--accent-2)); border: none; }
+        .alarm-status { font-size: 0.8rem; font-weight: 700; margin-top: 10px; }
+        .alarm-status.on { color: #b8f5cd; }
+        .alarm-status.off { color: #ffc0d2; }
+
+        /* ── 캘린더 ── */
+        .cal-card { padding: 20px; border-radius: 18px; background: rgba(255, 255, 255, 0.03); border: 1px solid var(--border); }
+        .cal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+        .cal-title { font-weight: 800; font-size: 1.05rem; }
+        .cal-nav {
+            width: 32px; height: 32px; border-radius: 10px; border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.05); color: var(--text); font-size: 1rem; cursor: pointer;
+            transition: background 0.2s ease, border-color 0.2s ease;
+        }
+        .cal-nav:hover { background: rgba(124, 92, 255, 0.15); border-color: rgba(124, 92, 255, 0.5); }
+        .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+        .cal-dow { text-align: center; font-size: 0.76rem; color: var(--muted); padding: 6px 0; font-weight: 700; }
+        .cal-cell {
+            position: relative; aspect-ratio: 1; border-radius: 10px; border: 1px solid transparent;
+            background: rgba(255, 255, 255, 0.03); color: var(--text); font-family: inherit;
+            cursor: pointer; display: flex; align-items: center; justify-content: center;
+            transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+        }
+        .cal-cell:hover { transform: translateY(-2px); background: rgba(124, 92, 255, 0.14); border-color: rgba(124, 92, 255, 0.45); }
+        .cal-cell.empty { visibility: hidden; cursor: default; }
+        .cal-cell.empty:hover { transform: none; background: none; }
+        .cal-cell.today { border-color: rgba(0, 212, 255, 0.6); font-weight: 800; }
+        .cal-day-num { font-size: 0.88rem; }
+        .cal-cell.has-plan .cal-day-num { font-weight: 800; }
+        .cal-dot {
+            position: absolute; bottom: 6px; width: 5px; height: 5px; border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+        }
+
+        /* ── 계획 추가/수정 창 ── */
+        dialog#planDialog {
+            width: min(480px, 92vw); max-height: 86vh; overflow-y: auto; margin: auto;
+            padding: 0; border: none; border-radius: 24px; color: var(--text);
+            background: #12121c; box-shadow: 0 30px 90px rgba(0, 0, 0, 0.6);
+        }
+        dialog#planDialog::backdrop { background: rgba(5, 5, 10, 0.65); backdrop-filter: blur(4px); }
+        .dlg-body { padding: 30px; }
+        .dlg-title { font-size: 1.15rem; font-weight: 900; letter-spacing: -0.01em; margin-bottom: 4px; }
+        .dlg-sub { font-size: 0.84rem; color: var(--muted); margin-bottom: 20px; }
+        .dlg-field { margin-bottom: 16px; }
+        .dlg-field label { display: block; font-size: 0.84rem; font-weight: 700; margin-bottom: 6px; }
+        .dlg-field .tip-inline { font-weight: 400; color: var(--muted); font-size: 0.76rem; }
+        dialog input[type="text"], dialog input[type="time"], dialog textarea {
+            width: 100%; padding: 10px 13px; border-radius: 11px; font-family: inherit;
+            font-size: 0.9rem; color: var(--text); background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border); transition: border-color 0.2s ease, background 0.2s ease, box-shadow 0.2s ease;
+        }
+        dialog textarea { min-height: 84px; resize: vertical; line-height: 1.6; }
+        dialog input::placeholder, dialog textarea::placeholder { color: #6b6b80; }
+        dialog input:focus, dialog textarea:focus {
+            outline: none; background: rgba(124, 92, 255, 0.08);
+            border-color: rgba(124, 92, 255, 0.6); box-shadow: 0 0 0 4px rgba(124, 92, 255, 0.15);
+        }
+        .dlg-actions { display: flex; gap: 10px; margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--border); }
+        .dlg-actions button {
+            flex: 1; padding: 12px; border-radius: 12px; border: none; font-family: inherit;
+            font-size: 0.92rem; font-weight: 700; cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+        }
+        .dlg-save { color: #fff; background: linear-gradient(90deg, var(--accent-1), var(--accent-2)); box-shadow: 0 8px 26px rgba(124, 92, 255, 0.4); }
+        .dlg-save:hover { transform: translateY(-2px); }
+        .dlg-cancel { color: var(--text); background: rgba(255, 255, 255, 0.05); border: 1px solid var(--border) !important; }
+        .dlg-cancel:hover { background: rgba(255, 255, 255, 0.1); }
+
+        /* ── 등록한 계획 목록 ── */
+        .plan-list { display: grid; gap: 14px; }
+        .plan-card { padding: 16px 18px; border-radius: 16px; background: rgba(255, 255, 255, 0.04); border: 1px solid var(--border); }
+        .plan-head { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; flex-wrap: wrap; }
+        .plan-date { font-size: 0.8rem; font-weight: 700; color: var(--accent-2); }
+        .plan-alarm-badge {
+            font-size: 0.7rem; font-weight: 800; padding: 3px 10px; border-radius: 999px;
+            color: #fff; background: linear-gradient(135deg, var(--accent-1), var(--accent-3));
+        }
+        .plan-title-input {
+            width: 100%; padding: 8px 12px; border-radius: 10px; font-family: inherit;
+            font-size: 0.94rem; font-weight: 800; color: var(--text);
+            background: rgba(255, 255, 255, 0.04); border: 1px solid transparent;
+            margin-bottom: 8px; transition: border-color 0.2s ease, background 0.2s ease;
+        }
+        .plan-content-input {
+            width: 100%; padding: 8px 12px; border-radius: 10px; font-family: inherit;
+            font-size: 0.84rem; color: var(--muted); line-height: 1.6; min-height: 46px; resize: vertical;
+            background: rgba(255, 255, 255, 0.04); border: 1px solid transparent;
+            transition: border-color 0.2s ease, background 0.2s ease, color 0.2s ease;
+        }
+        .plan-title-input:hover, .plan-content-input:hover { border-color: var(--border); }
+        .plan-title-input:focus, .plan-content-input:focus {
+            outline: none; color: var(--text); background: rgba(124, 92, 255, 0.1); border-color: rgba(124, 92, 255, 0.6);
+        }
+        .plan-actions { display: flex; gap: 8px; margin-top: 10px; }
+        .plan-ics-btn, .del-btn {
+            flex-shrink: 0; padding: 7px 13px; border-radius: 10px; border: 1px solid var(--border);
+            font-family: inherit; font-size: 0.78rem; font-weight: 700; color: var(--muted); cursor: pointer;
+            background: rgba(255, 255, 255, 0.04); transition: color 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+        }
+        .plan-ics-btn:hover { color: var(--accent-2); background: rgba(0, 212, 255, 0.12); border-color: rgba(0, 212, 255, 0.4); }
+        .del-btn:hover { color: #ffc0d2; background: rgba(255, 92, 138, 0.14); border-color: rgba(255, 92, 138, 0.45); }
+        .plan-empty {
+            padding: 34px 22px; border-radius: 16px; text-align: center; font-size: 0.92rem;
+            color: var(--muted); background: rgba(255, 255, 255, 0.03); border: 1px dashed var(--border);
+        }
+
+        .status-msg {
+            display: none; margin-top: 14px; padding: 11px 15px; border-radius: 12px;
+            font-size: 0.85rem; font-weight: 600;
+        }
+        .status-msg.show { display: block; }
+        .status-msg.error { color: #ffc0d2; background: rgba(255, 92, 138, 0.12); border: 1px solid rgba(255, 92, 138, 0.4); }
+        .status-msg.ok { color: #b8f5cd; background: rgba(74, 222, 128, 0.1); border: 1px solid rgba(74, 222, 128, 0.35); }
+
+        .guest-note {
+            padding: 20px 24px; border-radius: 18px; font-size: 0.9rem; color: var(--muted);
+            background: rgba(124, 92, 255, 0.07); border: 1px dashed rgba(124, 92, 255, 0.4);
+        }
+        .guest-note a { color: var(--accent-2); font-weight: 700; text-decoration: none; }
+        .guest-note a:hover { text-decoration: underline; }
+
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+        footer { position: relative; z-index: 1; margin-top: 36px; font-size: 0.8rem; color: var(--muted); letter-spacing: 0.08em; }
+        footer a { color: var(--accent-2); text-decoration: none; }
+        footer a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="aurora"><span></span><span></span><span></span></div>
+
+    <div id="auth-area"></div>
+
+    <main class="card">
+        <div class="badge"><span class="dot"></span>SKALA FRONTEND · MY HOLIDAY</div>
+        <h1>🏖️ <span data-personal="name" data-fallback="나">나</span>의 <span class="gradient">휴일 계획</span></h1>
+        <p class="intro">캘린더에 날짜를 찍어 간단한 제목과 내용으로 주말 계획을 남겨보세요.</p>
+
+        <div data-auth="in" hidden>
+            <section style="margin-top:30px;padding-top:0;border-top:none;animation:none">
+                <h2>🔔 <span class="accent">알림 설정</span></h2>
+                <div class="alarm-box">
+                    <p>브라우저 알림은 이 사이트 탭이 열려 있는 동안에만 울립니다. 컴퓨터가 꺼져 있거나
+                       브라우저를 완전히 껐을 때도 확실히 울리게 하려면 아래 "캘린더 앱에 등록"을 눌러
+                       맥 캘린더 · 아웃룩 · 구글 캘린더에 추가해 두세요.</p>
+                    <div class="alarm-actions">
+                        <button type="button" class="alarm-btn alarm-btn--primary" id="enableNotifBtn">🔔 브라우저 알림 켜기</button>
+                        <button type="button" class="alarm-btn" id="testNotifBtn">🧪 지금 테스트 알림 보내기</button>
+                        <button type="button" class="alarm-btn" id="fixedIcsBtn">📅 입실·퇴실 알림 캘린더 등록</button>
+                    </div>
+                    <p class="alarm-status" id="notifStatus"></p>
+                </div>
+            </section>
+        </div>
+
+        <section>
+            <h2>📅 <span class="accent">캘린더에서 계획 남기기</span></h2>
+
+            <div data-auth="in" hidden>
+                <p class="desc">날짜를 누르면 제목·내용을 적는 창이 뜹니다.</p>
+                <div class="cal-card">
+                    <div class="cal-head">
+                        <button type="button" class="cal-nav" id="prevMonth">‹</button>
+                        <span class="cal-title" id="calTitle"></span>
+                        <button type="button" class="cal-nav" id="nextMonth">›</button>
+                    </div>
+                    <div class="cal-grid" id="calGrid"></div>
+                </div>
+                <p class="status-msg" id="statusMsg"></p>
+            </div>
+
+            <p class="guest-note" data-auth="out" hidden>
+                🔒 로그인하면 나만의 휴일 계획을 캘린더에 남기고 알림도 받을 수 있습니다.
+                <a href="logIn.html">로그인</a> · <a href="signUp.html">회원가입</a>
+            </p>
+        </section>
+
+        <section data-auth="in" hidden>
+            <h2>📋 <span class="accent">등록한 계획</span></h2>
+            <div class="plan-list" id="planList"></div>
+        </section>
+    </main>
+
+    <footer><a href="index.html">← 메인으로 돌아가기</a></footer>
+
+    <!-- 계획 추가 창 -->
+    <dialog id="planDialog">
+        <div class="dlg-body">
+            <p class="dlg-title">📌 휴일 계획 추가</p>
+            <p class="dlg-sub" id="planDialogDate"></p>
+
+            <div class="dlg-field">
+                <label for="planTitle">제목</label>
+                <input type="text" id="planTitle" maxlength="40" placeholder="예: 친구와 등산">
+            </div>
+            <div class="dlg-field">
+                <label for="planContent">내용</label>
+                <textarea id="planContent" maxlength="200" placeholder="간단한 메모를 남겨보세요"></textarea>
+            </div>
+            <div class="dlg-field">
+                <label for="planTime">시간 <span class="tip-inline">(선택 — 정하면 그 시각에 알림)</span></label>
+                <input type="time" id="planTime">
+            </div>
+
+            <div class="dlg-actions">
+                <button type="button" class="dlg-cancel" id="planCancelBtn">취소</button>
+                <button type="button" class="dlg-save" id="planSaveBtn">저장하기</button>
+            </div>
+        </div>
+    </dialog>
+
+    <script src="../js/auth.js"></script>
+    <script src="../js/alarms.js"></script>
+    <script>
+        function pad(n) { return String(n).padStart(2, "0"); }
+        function dateKey(y, m, d) { return y + "-" + pad(m + 1) + "-" + pad(d); }
+        function formatDateKorean(dateStr) {
+            var p = dateStr.split("-").map(Number);
+            var wd = ["일", "월", "화", "수", "목", "금", "토"][new Date(p[0], p[1] - 1, p[2]).getDay()];
+            return p[0] + "년 " + p[1] + "월 " + p[2] + "일 (" + wd + ")";
+        }
+
+        const statusMsg = document.getElementById("statusMsg");
+        function showMsg(text, kind) {
+            statusMsg.textContent = text;
+            statusMsg.className = "status-msg show " + kind;
+        }
+
+        function myPlans() {
+            const user = Auth.currentUser();
+            return user ? Auth.getHolidays(user.userId) : [];
+        }
+        function persistPlans(list) {
+            const user = Auth.currentUser();
+            if (!user) return true;
+            const r = Auth.saveHolidays(user.userId, list);
+            if (!r.ok) {
+                showMsg(r.full ? "저장 공간이 가득 찼습니다. 계획을 몇 개 지우고 다시 시도해 주세요." : "저장하지 못했습니다.", "error");
+                return false;
+            }
+            return true;
+        }
+
+        // ── 캘린더 ──
+        let calYear, calMonth;
+        const calTitle = document.getElementById("calTitle");
+        const calGrid = document.getElementById("calGrid");
+
+        function renderCalendar() {
+            calTitle.textContent = calYear + "년 " + (calMonth + 1) + "월";
+
+            const plans = myPlans();
+            const plansByDate = {};
+            plans.forEach((p) => { (plansByDate[p.date] = plansByDate[p.date] || []).push(p); });
+
+            const firstDay = new Date(calYear, calMonth, 1).getDay();
+            const daysInMonth = new Date(calYear, calMonth + 1, 0).getDate();
+            const now = new Date();
+            const todayStr = dateKey(now.getFullYear(), now.getMonth(), now.getDate());
+
+            const cells = [];
+            ["일", "월", "화", "수", "목", "금", "토"].forEach((d) => {
+                const h = document.createElement("div");
+                h.className = "cal-dow";
+                h.textContent = d;
+                cells.push(h);
+            });
+            for (let i = 0; i < firstDay; i++) {
+                cells.push(Object.assign(document.createElement("div"), { className: "cal-cell empty" }));
+            }
+            for (let d = 1; d <= daysInMonth; d++) {
+                const key = dateKey(calYear, calMonth, d);
+                const cell = document.createElement("button");
+                cell.type = "button";
+                cell.className = "cal-cell" + (key === todayStr ? " today" : "") + (plansByDate[key] ? " has-plan" : "");
+                cell.innerHTML = '<span class="cal-day-num">' + d + "</span>" +
+                    (plansByDate[key] ? '<span class="cal-dot"></span>' : "");
+                cell.addEventListener("click", () => openPlanDialog(key));
+                cells.push(cell);
+            }
+            calGrid.replaceChildren(...cells);
+        }
+
+        document.getElementById("prevMonth").addEventListener("click", () => {
+            calMonth--; if (calMonth < 0) { calMonth = 11; calYear--; }
+            renderCalendar();
+        });
+        document.getElementById("nextMonth").addEventListener("click", () => {
+            calMonth++; if (calMonth > 11) { calMonth = 0; calYear++; }
+            renderCalendar();
+        });
+
+        // ── 계획 추가 창 ──
+        const planDialog = document.getElementById("planDialog");
+        function openPlanDialog(dateStr) {
+            document.getElementById("planDialogDate").textContent = formatDateKorean(dateStr);
+            document.getElementById("planTitle").value = "";
+            document.getElementById("planContent").value = "";
+            document.getElementById("planTime").value = "";
+            planDialog.dataset.date = dateStr;
+            planDialog.showModal();
+        }
+        document.getElementById("planCancelBtn").addEventListener("click", () => planDialog.close());
+
+        document.getElementById("planSaveBtn").addEventListener("click", () => {
+            const title = document.getElementById("planTitle").value.trim();
+            if (!title) {
+                showMsg("제목을 입력해 주세요.", "error");
+                return;
+            }
+            const content = document.getElementById("planContent").value.trim();
+            const time = document.getElementById("planTime").value;
+
+            const list = myPlans();
+            list.push({
+                id: Date.now() + "-" + Math.random().toString(36).slice(2, 8),
+                date: planDialog.dataset.date,
+                title: title,
+                content: content,
+                time: time,
+                createdAt: new Date().toISOString()
+            });
+
+            if (persistPlans(list)) {
+                planDialog.close();
+                renderCalendar();
+                renderPlanList();
+                showMsg("계획을 저장했습니다." + (time ? " 그 시각에 알림도 켜뒀습니다." : ""), "ok");
+            }
+        });
+
+        // ── 등록한 계획 목록 ──
+        const planList = document.getElementById("planList");
+
+        function renderPlanList() {
+            const list = myPlans().slice().sort((a, b) =>
+                (a.date + (a.time || "00:00")).localeCompare(b.date + (b.time || "00:00")));
+            planList.replaceChildren();
+
+            if (!list.length) {
+                planList.append(Object.assign(document.createElement("p"), {
+                    className: "plan-empty",
+                    textContent: "아직 등록한 계획이 없습니다. 위 캘린더에서 날짜를 눌러 추가해 보세요 📅"
+                }));
+                return;
+            }
+
+            list.forEach((plan) => {
+                const card = document.createElement("div");
+                card.className = "plan-card";
+
+                const head = document.createElement("div");
+                head.className = "plan-head";
+                const dateSpan = document.createElement("span");
+                dateSpan.className = "plan-date";
+                dateSpan.textContent = formatDateKorean(plan.date) + (plan.time ? " · " + plan.time : "");
+                head.append(dateSpan);
+                if (plan.time) {
+                    const badge = document.createElement("span");
+                    badge.className = "plan-alarm-badge";
+                    badge.textContent = "⏰ 알림 예정";
+                    head.append(badge);
+                }
+
+                const titleInput = document.createElement("input");
+                titleInput.type = "text";
+                titleInput.className = "plan-title-input";
+                titleInput.maxLength = 40;
+                titleInput.value = plan.title;
+                titleInput.addEventListener("change", () => {
+                    const l = myPlans();
+                    const t = l.find((p) => p.id === plan.id);
+                    if (!t) return;
+                    t.title = titleInput.value.trim();
+                    if (persistPlans(l)) showMsg("제목을 저장했습니다.", "ok");
+                });
+
+                const contentArea = document.createElement("textarea");
+                contentArea.className = "plan-content-input";
+                contentArea.value = plan.content || "";
+                contentArea.placeholder = "내용을 적어주세요";
+                contentArea.addEventListener("change", () => {
+                    const l = myPlans();
+                    const t = l.find((p) => p.id === plan.id);
+                    if (!t) return;
+                    t.content = contentArea.value.trim();
+                    if (persistPlans(l)) showMsg("내용을 저장했습니다.", "ok");
+                });
+
+                const actions = document.createElement("div");
+                actions.className = "plan-actions";
+
+                if (plan.time) {
+                    const icsBtn = document.createElement("button");
+                    icsBtn.type = "button";
+                    icsBtn.className = "plan-ics-btn";
+                    icsBtn.textContent = "📅 캘린더에 추가";
+                    icsBtn.addEventListener("click", () => Alarms.downloadICS(plan));
+                    actions.append(icsBtn);
+                }
+
+                const delBtn = document.createElement("button");
+                delBtn.type = "button";
+                delBtn.className = "del-btn";
+                delBtn.textContent = "🗑️ 삭제";
+                delBtn.addEventListener("click", () => {
+                    if (!confirm("이 계획을 삭제할까요?")) return;
+                    const left = myPlans().filter((p) => p.id !== plan.id);
+                    if (persistPlans(left)) {
+                        renderCalendar();
+                        renderPlanList();
+                        showMsg("계획을 삭제했습니다.", "ok");
+                    }
+                });
+                actions.append(delBtn);
+
+                card.append(head, titleInput, contentArea, actions);
+                planList.append(card);
+            });
+        }
+
+        // ── 알림 설정 ──
+        const notifStatus = document.getElementById("notifStatus");
+        function renderNotifStatus() {
+            const p = Alarms.permission();
+            if (p === "granted") {
+                notifStatus.textContent = "🔔 브라우저 알림이 켜져 있습니다.";
+                notifStatus.className = "alarm-status on";
+            } else if (p === "denied") {
+                notifStatus.textContent = "🔕 브라우저에서 알림이 차단되어 있습니다. 브라우저 설정에서 이 사이트의 알림을 허용해 주세요.";
+                notifStatus.className = "alarm-status off";
+            } else if (p === "unsupported") {
+                notifStatus.textContent = "이 브라우저는 알림을 지원하지 않습니다. 아래 캘린더 등록을 이용해 주세요.";
+                notifStatus.className = "alarm-status off";
+            } else {
+                notifStatus.textContent = "아직 알림을 켜지 않았습니다.";
+                notifStatus.className = "alarm-status off";
+            }
+        }
+
+        document.getElementById("enableNotifBtn").addEventListener("click", async () => {
+            await Alarms.requestPermission();
+            renderNotifStatus();
+        });
+
+        document.getElementById("testNotifBtn").addEventListener("click", () => {
+            const ok = Alarms.fire("🧪 테스트 알림", "이렇게 알림이 잘 뜨는지 확인해 보세요!", "test-" + Date.now());
+            showMsg(ok ? "테스트 알림을 보냈습니다. 화면 구석을 확인해 보세요." : "알림 권한을 먼저 켜주세요.", ok ? "ok" : "error");
+        });
+
+        document.getElementById("fixedIcsBtn").addEventListener("click", () => {
+            Alarms.downloadFixedICS();
+            showMsg("입실·퇴실체크.ics 파일을 내려받았습니다. 열어서 캘린더 앱에 추가해 주세요.", "ok");
+        });
+
+        function initCalendar() {
+            const now = new Date();
+            calYear = now.getFullYear();
+            calMonth = now.getMonth();
+            renderCalendar();
+        }
+
+        document.addEventListener("auth:change", () => {
+            renderCalendar();
+            renderPlanList();
+            renderNotifStatus();
+        });
+
+        initCalendar();
+        renderPlanList();
+        renderNotifStatus();
+    </script>
+</body>
+</html>

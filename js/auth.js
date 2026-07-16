@@ -77,6 +77,36 @@
         return write(photosKey(userId), photos);
     }
 
+    /* ── 휴일 계획 ─────────────────────────── */
+
+    function holidaysKey(userId) {
+        return "skala:holidays:" + userId;
+    }
+
+    function getHolidays(userId) {
+        return userId ? read(holidaysKey(userId), []) : [];
+    }
+
+    function saveHolidays(userId, plans) {
+        if (!userId) return { ok: false };
+        return write(holidaysKey(userId), plans);
+    }
+
+    /* ── 개인 메모 ─────────────────────────── */
+
+    function memosKey(userId) {
+        return "skala:memos:" + userId;
+    }
+
+    function getMemos(userId) {
+        return userId ? read(memosKey(userId), []) : [];
+    }
+
+    function saveMemos(userId, memos) {
+        if (!userId) return { ok: false };
+        return write(memosKey(userId), memos);
+    }
+
     function login(userId, password) {
         var user = getUser(userId);
         if (!user) return { ok: false, reason: "등록되지 않은 아이디입니다." };
@@ -318,6 +348,10 @@
         fillPairs: fillPairs,
         getPhotos: getPhotos,
         savePhotos: savePhotos,
+        getHolidays: getHolidays,
+        saveHolidays: saveHolidays,
+        getMemos: getMemos,
+        saveMemos: saveMemos,
         labels: { gender: GENDER_LABEL, interest: INTEREST_LABEL, route: ROUTE_LABEL }
     };
 

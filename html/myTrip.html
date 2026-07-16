@@ -506,6 +506,7 @@
     </dialog>
 
     <script src="../js/auth.js"></script>
+    <script src="../js/alarms.js"></script>
     <script>
         // 비로그인 상태에서 보여줄 예시 사진 (media 폴더에 파일을 두면 나타난다)
         const SAMPLE_PHOTOS = [
@@ -698,7 +699,7 @@
                     const title = document.createElement("input");
                     title.type = "text";
                     title.maxLength = 40;
-                    title.placeholder = "제목 (예: 리장 호도협)";
+                    title.placeholder = "제목";
                     title.value = file.name.replace(/\.[^.]+$/, "");
                     title.dataset.role = "title";
 
