@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SKALA · 나의 여행지</title>
+    <style>
+        :root {
+            --bg: #0a0a12;
+            --surface: rgba(255, 255, 255, 0.05);
+            --border: rgba(255, 255, 255, 0.1);
+            --text: #e8e8f0;
+            --muted: #9a9ab0;
+            --accent-1: #7c5cff;
+            --accent-2: #00d4ff;
+            --accent-3: #ff5c8a;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            min-height: 100vh;
+            background: var(--bg);
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", "Segoe UI", sans-serif;
+            line-height: 1.7;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 60px 24px 80px;
+            overflow-x: hidden;
+        }
+
+        /* ── 움직이는 오로라 배경 ── */
+        .aurora {
+            position: fixed;
+            inset: 0;
+            z-index: 0;
+            pointer-events: none;
+        }
+        .aurora span {
+            position: absolute;
+            width: 55vmax;
+            height: 55vmax;
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: drift 16s ease-in-out infinite alternate;
+        }
+        .aurora span:nth-child(1) {
+            background: radial-gradient(circle, var(--accent-1) 0%, transparent 70%);
+            top: -20vmax; left: -12vmax;
+        }
+        .aurora span:nth-child(2) {
+            background: radial-gradient(circle, var(--accent-2) 0%, transparent 70%);
+            bottom: -22vmax; right: -14vmax;
+            animation-delay: -8s;
+        }
+        .aurora span:nth-child(3) {
+            background: radial-gradient(circle, var(--accent-3) 0%, transparent 70%);
+            top: 40%; left: 55%;
+            width: 35vmax; height: 35vmax;
+            opacity: 0.16;
+            animation-delay: -4s;
+        }
+        @keyframes drift {
+            from { transform: translate(0, 0) scale(1); }
+            to   { transform: translate(7vmax, 5vmax) scale(1.2); }
+        }
+
+        /* ── 메인 카드 ── */
+        .card {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 760px;
+            padding: clamp(36px, 5vw, 56px);
+            border-radius: 28px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            box-shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
+            animation: fadeUp 0.9s ease both;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 18px;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.04);
+            font-size: 0.82rem;
+            letter-spacing: 0.16em;
+            color: var(--muted);
+            margin-bottom: 22px;
+        }
+        .badge .dot {
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: #4ade80;
+            box-shadow: 0 0 12px #4ade80;
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.35; }
+        }
+
+        h1 {
+            font-size: clamp(1.7rem, 4.5vw, 2.4rem);
+            font-weight: 900;
+            letter-spacing: -0.02em;
+        }
+        h1 .gradient {
+            background: linear-gradient(90deg, var(--accent-1), var(--accent-2), var(--accent-3), var(--accent-1));
+            background-size: 300% auto;
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: shine 6s linear infinite;
+        }
+        @keyframes shine {
+            to { background-position: 300% center; }
+        }
+
+        .intro {
+            margin-top: 12px;
+            color: var(--muted);
+            font-size: 0.98rem;
+        }
+
+        /* ── 섹션 ── */
+        section {
+            margin-top: 42px;
+            padding-top: 34px;
+            border-top: 1px solid var(--border);
+            animation: fadeUp 0.9s ease both;
+        }
+        section:nth-of-type(1) { animation-delay: 0.15s; }
+        section:nth-of-type(2) { animation-delay: 0.3s; }
+        section:nth-of-type(3) { animation-delay: 0.45s; }
+
+        h2 {
+            font-size: 1.3rem;
+            font-weight: 800;
+            margin-bottom: 16px;
+            letter-spacing: -0.01em;
+        }
+        h2 .accent {
+            background: linear-gradient(90deg, var(--accent-2), var(--accent-1));
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+        }
+        .desc {
+            color: var(--muted);
+            font-size: 0.9rem;
+            margin-bottom: 16px;
+        }
+
+        /* ── 오디오 ── */
+        audio {
+            width: 100%;
+            border-radius: 12px;
+            color-scheme: dark;
+        }
+        .media-note {
+            margin-top: 10px;
+            font-size: 0.78rem;
+            color: var(--muted);
+        }
+
+        /* ── 사진 앨범 ── */
+        .album {
+            display: grid;
+            gap: 22px;
+        }
+        figure {
+            border-radius: 16px;
+            overflow: hidden;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border);
+            transition: transform 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        figure:hover {
+            transform: translateY(-6px);
+            border-color: rgba(124, 92, 255, 0.45);
+            box-shadow: 0 16px 40px rgba(124, 92, 255, 0.25);
+        }
+        figure img {
+            display: block;
+            width: 100%;
+            aspect-ratio: 16 / 10;
+            object-fit: cover;
+            /* 이미지 파일을 넣기 전에도 자리와 톤이 유지되도록 */
+            background: linear-gradient(135deg, rgba(124, 92, 255, 0.22), rgba(0, 212, 255, 0.14));
+            color: var(--muted);
+            font-size: 0.85rem;
+        }
+        figcaption {
+            padding: 13px 18px;
+            font-size: 0.88rem;
+            font-weight: 700;
+        }
+        figcaption .year {
+            margin-left: 6px;
+            font-weight: 500;
+            color: var(--muted);
+        }
+
+        /* ── 비디오 ── */
+        video {
+            display: block;
+            width: 100%;
+            aspect-ratio: 16 / 9;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+            background: linear-gradient(135deg, rgba(255, 92, 138, 0.18), rgba(124, 92, 255, 0.14));
+            color-scheme: dark;
+        }
+        .vlog-caption {
+            margin-top: 12px;
+            font-size: 0.88rem;
+            font-weight: 700;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        footer {
+            position: relative;
+            z-index: 1;
+            margin-top: 36px;
+            font-size: 0.8rem;
+            color: var(--muted);
+            letter-spacing: 0.08em;
+        }
+        footer a { color: var(--accent-2); text-decoration: none; }
+        footer a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="aurora">
+        <span></span><span></span><span></span>
+    </div>
+
+    <main class="card">
+        <div class="badge"><span class="dot"></span>SKALA FRONTEND · MY TRIP</div>
+        <h1>🌍 나의 <span class="gradient">여행 앨범</span> 🎵</h1>
+        <p class="intro">여행지에서 담아온 사진과 소리, 그리고 영상을 모았습니다.</p>
+
+        <section>
+            <h2>🎵 <span class="accent">여행의 배경 음악</span></h2>
+            <p class="desc">사진을 넘기며 함께 들으면 그날의 공기가 떠오릅니다.</p>
+            <audio controls preload="metadata">
+                <source src="../media/travel-theme.mp3" type="audio/mpeg">
+                <source src="../media/travel-theme.ogg" type="audio/ogg">
+                이 브라우저는 audio 요소를 지원하지 않습니다.
+                <a href="../media/travel-theme.mp3">음악 파일을 내려받아 들어주세요.</a>
+            </audio>
+            <p class="media-note">※ media 폴더에 travel-theme.mp3 파일을 넣으면 재생됩니다.</p>
+        </section>
+
+        <section>
+            <h2>📷 <span class="accent">여행 사진</span></h2>
+            <div class="album">
+                <figure>
+                    <img src="../media/lijiang-gorge.jpg"
+                         alt="중국 리장 호도협의 웅장한 협곡 풍경">
+                    <figcaption>리장 호도협 <span class="year">(2025년)</span></figcaption>
+                </figure>
+                <figure>
+                    <img src="../media/cebu-night.jpg"
+                         alt="필리핀 세부의 불빛이 가득한 밤 스카이라인">
+                    <figcaption>세부 밤 스카이라인 <span class="year">(2024년)</span></figcaption>
+                </figure>
+                <figure>
+                    <img src="../media/hokkaido.jpg"
+                         alt="눈으로 덮인 홋카이도 대설산의 능선">
+                    <figcaption>홋카이도 대설산 <span class="year">(2025년)</span></figcaption>
+                </figure>
+            </div>
+        </section>
+
+        <section>
+            <h2>🎬 <span class="accent">나의 여행 브이로그</span></h2>
+            <p class="desc">사진에 담기지 않은 순간들은 영상으로 남겼습니다.</p>
+            <video controls preload="metadata" poster="../media/vlog-poster.jpg">
+                <source src="../media/travel-vlog.mp4" type="video/mp4">
+                <source src="../media/travel-vlog.webm" type="video/webm">
+                이 브라우저는 video 요소를 지원하지 않습니다.
+                <a href="../media/travel-vlog.mp4">영상을 내려받아 시청해 주세요.</a>
+            </video>
+            <p class="vlog-caption">🎵 리장의 아름다운 음악</p>
+            <p class="media-note">※ media 폴더에 travel-vlog.mp4 파일을 넣으면 재생됩니다.</p>
+        </section>
+    </main>
+
+    <footer><a href="index.html">← 메인으로 돌아가기</a></footer>
+</body>
+</html>
