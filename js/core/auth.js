@@ -8,7 +8,7 @@
  *   해시로 검증해야 하며, 브라우저에 비밀번호를 두면 안 된다.
  *
  * 페이지에서 쓰는 법
- *   <script src="../js/auth.js"></script>
+ *   <script src="../js/core/auth.js"></script>
  *   <div id="auth-area"></div>                     → 로그인/로그아웃 버튼이 자동으로 그려진다
  *   <span data-personal="name" data-fallback="게스트"></span>  → 로그인 사용자 값으로 채워진다
  *   <div data-auth="in">...</div>                  → 로그인 상태에서만 보인다

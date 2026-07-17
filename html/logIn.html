@@ -4,20 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SKALA · 로그인</title>
+    <link rel="stylesheet" href="../css/base.css">
     <style>
-        :root {
-            --bg: #0a0a12;
-            --surface: rgba(255, 255, 255, 0.05);
-            --border: rgba(255, 255, 255, 0.1);
-            --text: #e8e8f0;
-            --muted: #9a9ab0;
-            --accent-1: #7c5cff;
-            --accent-2: #00d4ff;
-            --accent-3: #ff5c8a;
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
         body {
             min-height: 100vh;
             background: var(--bg);
@@ -30,42 +18,6 @@
             justify-content: center;
             padding: 92px 24px 48px;
             overflow-x: hidden;
-        }
-
-        /* ── 움직이는 오로라 배경 ── */
-        .aurora {
-            position: fixed;
-            inset: 0;
-            z-index: 0;
-            pointer-events: none;
-        }
-        .aurora span {
-            position: absolute;
-            width: 55vmax;
-            height: 55vmax;
-            border-radius: 50%;
-            opacity: 0.3;
-            animation: drift 16s ease-in-out infinite alternate;
-        }
-        .aurora span:nth-child(1) {
-            background: radial-gradient(circle, var(--accent-1) 0%, transparent 70%);
-            top: -20vmax; left: -12vmax;
-        }
-        .aurora span:nth-child(2) {
-            background: radial-gradient(circle, var(--accent-2) 0%, transparent 70%);
-            bottom: -22vmax; right: -14vmax;
-            animation-delay: -8s;
-        }
-        .aurora span:nth-child(3) {
-            background: radial-gradient(circle, var(--accent-3) 0%, transparent 70%);
-            top: 40%; left: 55%;
-            width: 35vmax; height: 35vmax;
-            opacity: 0.16;
-            animation-delay: -4s;
-        }
-        @keyframes drift {
-            from { transform: translate(0, 0) scale(1); }
-            to   { transform: translate(7vmax, 5vmax) scale(1.2); }
         }
 
         /* ── 메인 카드 ── */
@@ -97,33 +49,11 @@
             color: var(--muted);
             margin-bottom: 20px;
         }
-        .badge .dot {
-            width: 8px; height: 8px;
-            border-radius: 50%;
-            background: #4ade80;
-            box-shadow: 0 0 12px #4ade80;
-            animation: pulse 2s infinite;
-        }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.35; }
-        }
 
         h1 {
             font-size: clamp(1.6rem, 4.5vw, 2.1rem);
             font-weight: 900;
             letter-spacing: -0.02em;
-        }
-        h1 .gradient {
-            background: linear-gradient(90deg, var(--accent-1), var(--accent-2), var(--accent-3), var(--accent-1));
-            background-size: 300% auto;
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            animation: shine 6s linear infinite;
-        }
-        @keyframes shine {
-            to { background-position: 300% center; }
         }
         .intro {
             margin-top: 10px;
@@ -238,11 +168,6 @@
             background: linear-gradient(90deg, var(--accent-1), var(--accent-2));
         }
 
-        @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
-
         footer {
             position: relative;
             z-index: 1;
@@ -251,8 +176,6 @@
             color: var(--muted);
             letter-spacing: 0.08em;
         }
-        footer a { color: var(--accent-2); text-decoration: none; }
-        footer a:hover { text-decoration: underline; }
     </style>
 </head>
 <body>
@@ -300,8 +223,8 @@
 
     <footer><a href="index.html">← 메인으로 돌아가기</a></footer>
 
-    <script src="../js/auth.js"></script>
-    <script src="../js/alarms.js"></script>
+    <script src="../js/core/auth.js"></script>
+    <script src="../js/features/alarms.js"></script>
     <script>
         var form = document.getElementById("loginForm");
         var errorBox = document.getElementById("error");

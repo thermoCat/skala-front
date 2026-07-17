@@ -1,0 +1,102 @@
+/*
+ * base.css — 모든 페이지가 토씨 하나 다르지 않게 똑같이 쓰던 공통 스타일.
+ *
+ * 색상 변수, 리셋, 오로라 배경, 배지의 초록 점, 제목의 그라디언트 텍스트,
+ * 카드/섹션 등장 애니메이션, footer 링크 색상처럼 페이지마다 100% 동일하게
+ * 복사돼 있던 부분만 모았다. 카드 폭·배지 글자 크기·제목 크기처럼 페이지마다
+ * 값이 다른 것들은 그대로 각 페이지의 <style> 안에 남겨뒀다.
+ *
+ * html/myClass.html은 과제 스펙상 손대지 않기로 한 파일이라 이 파일을 연결하지
+ * 않고, 예전처럼 필요한 스타일을 <style> 안에 전부 그대로 갖고 있다.
+ */
+
+:root {
+    --bg: #0a0a12;
+    --surface: rgba(255, 255, 255, 0.05);
+    --border: rgba(255, 255, 255, 0.1);
+    --text: #e8e8f0;
+    --muted: #9a9ab0;
+    --accent-1: #7c5cff;
+    --accent-2: #00d4ff;
+    --accent-3: #ff5c8a;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* ── 움직이는 오로라 배경 ── */
+.aurora {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+}
+.aurora span {
+    position: absolute;
+    width: 55vmax;
+    height: 55vmax;
+    border-radius: 50%;
+    opacity: 0.3;
+    animation: drift 16s ease-in-out infinite alternate;
+}
+.aurora span:nth-child(1) {
+    background: radial-gradient(circle, var(--accent-1) 0%, transparent 70%);
+    top: -20vmax; left: -12vmax;
+}
+.aurora span:nth-child(2) {
+    background: radial-gradient(circle, var(--accent-2) 0%, transparent 70%);
+    bottom: -22vmax; right: -14vmax;
+    animation-delay: -8s;
+}
+.aurora span:nth-child(3) {
+    background: radial-gradient(circle, var(--accent-3) 0%, transparent 70%);
+    top: 40%; left: 55%;
+    width: 35vmax; height: 35vmax;
+    opacity: 0.16;
+    animation-delay: -4s;
+}
+@keyframes drift {
+    from { transform: translate(0, 0) scale(1); }
+    to   { transform: translate(7vmax, 5vmax) scale(1.2); }
+}
+
+/* ── 배지 안의 깜빡이는 초록 점 ── */
+.badge .dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: #4ade80;
+    box-shadow: 0 0 12px #4ade80;
+    animation: pulse 2s infinite;
+}
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.35; }
+}
+
+/* ── 제목 그라디언트 텍스트 ── */
+h1 .gradient {
+    background: linear-gradient(90deg, var(--accent-1), var(--accent-2), var(--accent-3), var(--accent-1));
+    background-size: 300% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    animation: shine 6s linear infinite;
+}
+@keyframes shine {
+    to { background-position: 300% center; }
+}
+h2 .accent {
+    background: linear-gradient(90deg, var(--accent-2), var(--accent-1));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+/* ── 카드/섹션 등장 애니메이션 ── */
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(30px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── footer 링크 ── */
+footer a { color: var(--accent-2); text-decoration: none; }
+footer a:hover { text-decoration: underline; }

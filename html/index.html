@@ -4,20 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SKALA · 장상민의 유니버스</title>
+    <link rel="stylesheet" href="../css/base.css">
     <style>
-        :root {
-            --bg: #0a0a12;
-            --surface: rgba(255, 255, 255, 0.05);
-            --border: rgba(255, 255, 255, 0.1);
-            --text: #e8e8f0;
-            --muted: #9a9ab0;
-            --accent-1: #7c5cff;
-            --accent-2: #00d4ff;
-            --accent-3: #ff5c8a;
-        }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
         body {
             min-height: 100vh;
             background: var(--bg);
@@ -32,42 +20,6 @@
         }
 
         /* 우측 상단 로그인/회원가입 영역은 js/auth.js가 그린다 */
-
-        /* ── 움직이는 오로라 배경 ── */
-        .aurora {
-            position: fixed;
-            inset: 0;
-            z-index: 0;
-            pointer-events: none;
-        }
-        .aurora span {
-            position: absolute;
-            width: 55vmax;
-            height: 55vmax;
-            border-radius: 50%;
-            opacity: 0.3;
-            animation: drift 16s ease-in-out infinite alternate;
-        }
-        .aurora span:nth-child(1) {
-            background: radial-gradient(circle, var(--accent-1) 0%, transparent 70%);
-            top: -20vmax; left: -12vmax;
-        }
-        .aurora span:nth-child(2) {
-            background: radial-gradient(circle, var(--accent-2) 0%, transparent 70%);
-            bottom: -22vmax; right: -14vmax;
-            animation-delay: -8s;
-        }
-        .aurora span:nth-child(3) {
-            background: radial-gradient(circle, var(--accent-3) 0%, transparent 70%);
-            top: 40%; left: 55%;
-            width: 35vmax; height: 35vmax;
-            opacity: 0.16;
-            animation-delay: -4s;
-        }
-        @keyframes drift {
-            from { transform: translate(0, 0) scale(1); }
-            to   { transform: translate(7vmax, 5vmax) scale(1.2); }
-        }
 
         /* ── 셸 ── */
         .shell {
@@ -101,33 +53,11 @@
             color: var(--muted);
             margin-bottom: 18px;
         }
-        .badge .dot {
-            width: 8px; height: 8px;
-            border-radius: 50%;
-            background: #4ade80;
-            box-shadow: 0 0 12px #4ade80;
-            animation: pulse 2s infinite;
-        }
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.35; }
-        }
         h1 {
             font-size: clamp(1.9rem, 5vw, 3rem);
             font-weight: 900;
             letter-spacing: -0.03em;
             line-height: 1.2;
-        }
-        h1 .gradient {
-            background: linear-gradient(90deg, var(--accent-1), var(--accent-2), var(--accent-3), var(--accent-1));
-            background-size: 300% auto;
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
-            animation: shine 6s linear infinite;
-        }
-        @keyframes shine {
-            to { background-position: 300% center; }
         }
         .tagline {
             margin-top: 12px;
@@ -171,12 +101,6 @@
             font-weight: 800;
             letter-spacing: -0.01em;
             margin-bottom: 16px;
-        }
-        h2 .accent {
-            background: linear-gradient(90deg, var(--accent-2), var(--accent-1));
-            -webkit-background-clip: text;
-            background-clip: text;
-            color: transparent;
         }
 
         /* ── nav ── */
@@ -497,11 +421,6 @@
             opacity: 0.75;
         }
 
-        @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
-
         @media (max-width: 900px) {
             .layout { grid-template-columns: 1fr; }
             .site-nav, .site-aside { position: static; }
@@ -606,9 +525,9 @@
         </footer>
     </div>
 
-    <script src="../js/auth.js"></script>
-    <script src="../js/timetable.js"></script>
-    <script src="../js/alarms.js"></script>
+    <script src="../js/core/auth.js"></script>
+    <script src="../js/data/timetable.js"></script>
+    <script src="../js/features/alarms.js"></script>
     <script>
         function pad2(n) { return String(n).padStart(2, "0"); }
         function localDateKey(d) { return d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate()); }

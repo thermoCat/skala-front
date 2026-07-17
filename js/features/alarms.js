@@ -15,8 +15,8 @@
  *      브라우저를 켜두지 않아도 그 앱이 알아서 알림을 울려준다. 이게 더 확실한 방법이다.
  *
  * 페이지에서 쓰는 법
- *   <script src="../js/auth.js"></script>
- *   <script src="../js/alarms.js"></script>
+ *   <script src="../js/core/auth.js"></script>
+ *   <script src="../js/features/alarms.js"></script>
  *   Alarms.requestPermission()      → 알림 권한을 묻는다 (버튼 클릭 등 사용자 동작 안에서 호출)
  *   Alarms.permission()             → "granted" | "denied" | "default" | "unsupported"
  *   Alarms.fire(title, body, tag)   → 지금 바로 알림을 띄운다 (테스트용으로도 쓴다)
