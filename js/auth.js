@@ -169,6 +169,7 @@
         school: "학교 / 기관 안내",
         etc: "기타"
     };
+    var CLASS_LABEL = { "1": "1반 (201호)", "2": "2반 (202호)", "3": "3반 (204호)", "4": "4반 (205호)" };
 
     // 앞 글자의 받침 유무로 조사를 고른다. pair = [받침O, 받침X] 예: ["을","를"]
     function pickJosa(word, pair) {
@@ -195,6 +196,7 @@
             case "birth":     return formatBirth(user.birth);
             case "gender":    return GENDER_LABEL[user.gender] || "";
             case "route":     return ROUTE_LABEL[user.route] || "";
+            case "classNo":   return CLASS_LABEL[user.classNo] || "";
             case "intro":     return user.intro || "";
             case "interests":
                 var list = user.interests || [];
@@ -377,7 +379,7 @@
         saveHolidays: saveHolidays,
         getMemos: getMemos,
         saveMemos: saveMemos,
-        labels: { gender: GENDER_LABEL, interest: INTEREST_LABEL, route: ROUTE_LABEL }
+        labels: { gender: GENDER_LABEL, interest: INTEREST_LABEL, route: ROUTE_LABEL, classNo: CLASS_LABEL }
     };
 
     document.addEventListener("DOMContentLoaded", function () {

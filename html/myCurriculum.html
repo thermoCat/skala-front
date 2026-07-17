@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SKALA · 나의 교육과정</title>
+    <style>
+        :root {
+            --bg: #0a0a12;
+            --surface: rgba(255, 255, 255, 0.05);
+            --border: rgba(255, 255, 255, 0.1);
+            --text: #e8e8f0;
+            --muted: #9a9ab0;
+            --accent-1: #7c5cff;
+            --accent-2: #00d4ff;
+            --accent-3: #ff5c8a;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            min-height: 100vh;
+            background: var(--bg);
+            color: var(--text);
+            font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", "Segoe UI", sans-serif;
+            line-height: 1.7;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 92px 24px 80px;
+            overflow-x: hidden;
+        }
+
+        .aurora { position: fixed; inset: 0; z-index: 0; pointer-events: none; }
+        .aurora span {
+            position: absolute; width: 55vmax; height: 55vmax; border-radius: 50%;
+            opacity: 0.3; animation: drift 16s ease-in-out infinite alternate;
+        }
+        .aurora span:nth-child(1) {
+            background: radial-gradient(circle, var(--accent-1) 0%, transparent 70%);
+            top: -20vmax; left: -12vmax;
+        }
+        .aurora span:nth-child(2) {
+            background: radial-gradient(circle, var(--accent-2) 0%, transparent 70%);
+            bottom: -22vmax; right: -14vmax; animation-delay: -8s;
+        }
+        .aurora span:nth-child(3) {
+            background: radial-gradient(circle, var(--accent-3) 0%, transparent 70%);
+            top: 40%; left: 55%; width: 35vmax; height: 35vmax;
+            opacity: 0.16; animation-delay: -4s;
+        }
+        @keyframes drift {
+            from { transform: translate(0, 0) scale(1); }
+            to   { transform: translate(7vmax, 5vmax) scale(1.2); }
+        }
+
+        .card {
+            position: relative; z-index: 1; width: 100%; max-width: 860px;
+            padding: clamp(36px, 5vw, 56px); border-radius: 28px;
+            background: var(--surface); border: 1px solid var(--border);
+            backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            box-shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
+            animation: fadeUp 0.9s ease both;
+        }
+        .badge {
+            display: inline-flex; align-items: center; gap: 8px; padding: 7px 18px;
+            border-radius: 999px; border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.04); font-size: 0.82rem;
+            letter-spacing: 0.16em; color: var(--muted); margin-bottom: 22px;
+        }
+        .badge .dot {
+            width: 8px; height: 8px; border-radius: 50%; background: #4ade80;
+            box-shadow: 0 0 12px #4ade80; animation: pulse 2s infinite;
+        }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
+
+        h1 { font-size: clamp(1.7rem, 4.5vw, 2.4rem); font-weight: 900; letter-spacing: -0.02em; }
+        h1 .gradient {
+            background: linear-gradient(90deg, var(--accent-1), var(--accent-2), var(--accent-3), var(--accent-1));
+            background-size: 300% auto; -webkit-background-clip: text; background-clip: text;
+            color: transparent; animation: shine 6s linear infinite;
+        }
+        @keyframes shine { to { background-position: 300% center; } }
+        .intro { margin-top: 12px; color: var(--muted); font-size: 0.98rem; }
+
+        .class-pill {
+            display: inline-flex; align-items: center; gap: 8px; margin-top: 16px;
+            padding: 8px 16px; border-radius: 999px; font-size: 0.86rem; font-weight: 700;
+            color: var(--text); background: rgba(124, 92, 255, 0.14);
+            border: 1px solid rgba(124, 92, 255, 0.4);
+        }
+
+        section {
+            margin-top: 42px; padding-top: 34px; border-top: 1px solid var(--border);
+            animation: fadeUp 0.9s 0.15s ease both;
+        }
+        h2 { font-size: 1.3rem; font-weight: 800; margin-bottom: 8px; letter-spacing: -0.01em; }
+        h2 .accent {
+            background: linear-gradient(90deg, var(--accent-2), var(--accent-1));
+            -webkit-background-clip: text; background-clip: text; color: transparent;
+        }
+        .desc { color: var(--muted); font-size: 0.9rem; margin-bottom: 18px; }
+
+        .guest-note, .no-class-note {
+            padding: 20px 24px; border-radius: 18px; font-size: 0.9rem; color: var(--muted);
+            background: rgba(124, 92, 255, 0.07); border: 1px dashed rgba(124, 92, 255, 0.4);
+        }
+        .guest-note a, .no-class-note a { color: var(--accent-2); font-weight: 700; text-decoration: none; }
+        .guest-note a:hover, .no-class-note a:hover { text-decoration: underline; }
+
+        /* ── 교육과정 표 ── */
+        .curr-table-wrap {
+            margin-top: 20px;
+            max-height: 560px;
+            overflow-y: auto;
+            border-radius: 16px;
+            border: 1px solid var(--border);
+        }
+        table.curr-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.86rem;
+        }
+        .curr-table thead th {
+            position: sticky;
+            top: 0;
+            z-index: 1;
+            padding: 12px 14px;
+            text-align: left;
+            font-size: 0.78rem;
+            font-weight: 800;
+            color: var(--muted);
+            background: #14141f;
+            border-bottom: 1px solid var(--border);
+            white-space: nowrap;
+        }
+        .curr-table tbody td {
+            padding: 11px 14px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+            vertical-align: top;
+        }
+        .curr-table tbody tr:last-child td { border-bottom: none; }
+        .curr-table tbody tr:hover td { background: rgba(255, 255, 255, 0.03); }
+        .curr-table .col-week { white-space: nowrap; color: var(--muted); }
+        .curr-table .col-date { white-space: nowrap; }
+        .curr-table .col-day { white-space: nowrap; color: var(--muted); }
+        .curr-table .col-prof { white-space: nowrap; font-weight: 700; }
+        .curr-table tr.is-holiday td { color: var(--muted); font-style: italic; }
+        .curr-table tr.is-holiday .col-prof { font-weight: 400; }
+        .curr-table tr.is-today td {
+            background: rgba(124, 92, 255, 0.14);
+            box-shadow: inset 3px 0 0 var(--accent-1);
+        }
+        .curr-table tr.is-today .col-date::after {
+            content: "오늘";
+            margin-left: 6px;
+            padding: 1px 7px;
+            border-radius: 999px;
+            font-size: 0.68rem;
+            font-weight: 800;
+            color: #fff;
+            background: var(--accent-1);
+        }
+
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+
+        footer { position: relative; z-index: 1; margin-top: 36px; font-size: 0.8rem; color: var(--muted); letter-spacing: 0.08em; }
+        footer a { color: var(--accent-2); text-decoration: none; }
+        footer a:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="aurora"><span></span><span></span><span></span></div>
+
+    <div id="auth-area"></div>
+
+    <main class="card">
+        <div class="badge"><span class="dot"></span>SKALA FRONTEND · MY CURRICULUM</div>
+        <h1>📚 <span data-personal="name" data-fallback="나">나</span>의 <span class="gradient">교육과정</span></h1>
+        <p class="intro">내 반에 맞는 주차별 과목과 담당 교수를 확인하세요.</p>
+
+        <div data-auth="in" hidden>
+            <p class="class-pill" id="classPill"></p>
+        </div>
+
+        <section>
+            <h2>🗓️ <span class="accent">주차별 교육과정</span></h2>
+
+            <div data-auth="in" hidden>
+                <p class="desc">주차 · 일자 · 과목명 · 담당 교수를 한눈에 볼 수 있습니다. 표를 내려서 이후 일정도 확인해 보세요.</p>
+
+                <p class="no-class-note" id="noClassNote" hidden>
+                    아직 소속 반이 설정되어 있지 않습니다.
+                    <a href="myProfile.html">프로필 수정</a>에서 반을 선택하면 내 교육과정이 표시됩니다.
+                </p>
+
+                <div class="curr-table-wrap" id="tableWrap" hidden>
+                    <table class="curr-table">
+                        <thead>
+                            <tr>
+                                <th>주차</th>
+                                <th>일자</th>
+                                <th>요일</th>
+                                <th>과목명</th>
+                                <th>담당 교수</th>
+                            </tr>
+                        </thead>
+                        <tbody id="currBody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <p class="guest-note" data-auth="out" hidden>
+                🔒 지금은 로그인하지 않아 교육과정을 볼 수 없습니다.
+                <a href="logIn.html">로그인</a>하면 내 반에 맞는 주차별 과목·교수 일정을 볼 수 있습니다.
+                아직 계정이 없다면 <a href="signUp.html">회원가입</a>부터 해주세요.
+            </p>
+        </section>
+    </main>
+
+    <footer><a href="index.html">← 메인으로 돌아가기</a></footer>
+
+    <script src="../js/auth.js"></script>
+    <script src="../js/curriculum.js"></script>
+    <script>
+        const classPill = document.getElementById("classPill");
+        const noClassNote = document.getElementById("noClassNote");
+        const tableWrap = document.getElementById("tableWrap");
+        const currBody = document.getElementById("currBody");
+
+        function todayKey() {
+            const d = new Date();
+            return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+        }
+
+        function formatDate(dateStr) {
+            const [y, m, d] = dateStr.split("-").map(Number);
+            return y + "." + String(m).padStart(2, "0") + "." + String(d).padStart(2, "0");
+        }
+
+        function renderCurriculum() {
+            const user = Auth.currentUser();
+            if (!user) return;
+
+            const classNo = user.classNo;
+            if (!classNo) {
+                classPill.textContent = "";
+                noClassNote.hidden = false;
+                tableWrap.hidden = true;
+                return;
+            }
+
+            noClassNote.hidden = true;
+            tableWrap.hidden = false;
+            classPill.textContent = "🎓 " + (Curriculum.CLASS_LABELS[classNo] || classNo + "반");
+
+            const today = todayKey();
+            const rows = Curriculum.forClass(classNo).map((e) => {
+                const tr = document.createElement("tr");
+                if (e.holiday) tr.className = "is-holiday";
+                if (e.date === today) tr.className += (tr.className ? " " : "") + "is-today";
+
+                const week = document.createElement("td");
+                week.className = "col-week";
+                week.textContent = e.week ? e.week + "주차" : "-";
+
+                const date = document.createElement("td");
+                date.className = "col-date";
+                date.textContent = formatDate(e.date);
+
+                const day = document.createElement("td");
+                day.className = "col-day";
+                day.textContent = e.day || "";
+
+                const subject = document.createElement("td");
+                subject.className = "col-subject";
+                subject.textContent = e.subject || "";
+
+                const prof = document.createElement("td");
+                prof.className = "col-prof";
+                prof.textContent = e.holiday ? "" : (e.professor || "미정");
+
+                tr.append(week, date, day, subject, prof);
+                return tr;
+            });
+
+            currBody.replaceChildren(...rows);
+
+            // 오늘(또는 오늘 이후 가장 가까운) 일정이 보이도록 스크롤한다
+            const todayRow = currBody.querySelector("tr.is-today") ||
+                [...currBody.children].find((tr) => tr.querySelector(".col-date"));
+            if (todayRow) todayRow.scrollIntoView({ block: "center" });
+        }
+
+        document.addEventListener("auth:change", renderCurriculum);
+    </script>
+</body>
+</html>

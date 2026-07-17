@@ -74,6 +74,10 @@ git clone https://github.com/thermoCat/skala-front.git
   `api.fire`로 참조하므로 테스트 시 몽키패치 가능.
 - **`js/timetable.js`** — 강의 시간표 데이터. **`html/myClass.html`의 표와 내용이
   같아야 하므로, 시간표를 바꾸면 두 곳을 함께 고쳐야 한다.**
+- **`js/curriculum.js`** — 반별(1~4반) 실제 교육과정 캘린더 데이터. `skala_timetable.xlsx`
+  원본 스프레드시트를 그대로 옮긴 것이며, `Curriculum.forClass(classNo)`가 그 반의
+  시선으로 본 { date, day, week, subject, holiday, professor } 목록을 돌려준다.
+  `html/myCurriculum.html`이 이 데이터를 회원의 `user.classNo`로 필터링해서 보여준다.
 
 ## 지켜야 할 규칙
 
@@ -102,4 +106,16 @@ git clone https://github.com/thermoCat/skala-front.git
   `html/myTrip.html`의 `MAX_VIDEO_BYTES`/`MAX_AUDIO_BYTES`를 조정한다.
 - 알림 기능은 실제 기기에서 각 페이지의 "🧪 지금 테스트 알림 보내기" 버튼으로
   직접 켜고 확인해야 한다 (브라우저 알림 권한은 기기·브라우저별로 따로 설정됨).
+- `signUp.html`에 "소속 반"(1~4반) 필수 선택 필드를 추가했고, `myProfile.html`에서도
+  보고 고칠 수 있다. `js/curriculum.js`는 `skala_timetable.xlsx`(2026-07-10 기준) 원본을
+  그대로 옮겼지만, 원본 데이터 자체에 빈 칸이 있어 다음 규칙으로 보정했다 — 자세한 건
+  `js/curriculum.js` 파일 맨 위 주석 참고:
+  - "주차" 칸이 비어 있으면 휴일/휴강으로 본다.
+  - 네 반 중 담당 교수가 정확히 한 칸에만 적혀 있으면 전체 반 공통 특강으로 보고
+    4개 반 모두에 그 교수를 채웠다.
+  - 그 외 특정 반만 비어 있는 경우는 원본에 그 반 교수가 기록되지 않았던 것이라
+    값을 지어내지 않고 "미정"으로 남겼다 (예: 2026-09-21 2반).
+  - 새 스프레드시트를 받으면 `js/curriculum.js` 생성에 쓴 추출 로직을 다시 돌려야
+    한다 (스크립트 자체는 저장해두지 않았으니, 같은 시트 구조라면 openpyxl로
+    새로 뽑으면 된다).
 - README.md의 스크린샷 표는 자리만 있고 이미지가 없다. 캡처해서 채워 넣을 것.

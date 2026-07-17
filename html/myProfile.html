@@ -318,6 +318,7 @@
         }
         dialog input[type="text"],
         dialog input[type="date"],
+        dialog select,
         dialog textarea {
             width: 100%;
             padding: 10px 13px;
@@ -330,9 +331,21 @@
             transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
         }
         dialog textarea { min-height: 84px; resize: vertical; line-height: 1.6; }
+        dialog select {
+            cursor: pointer;
+            appearance: none;
+            background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%),
+                              linear-gradient(135deg, var(--muted) 50%, transparent 50%);
+            background-position: calc(100% - 18px) center, calc(100% - 13px) center;
+            background-size: 5px 5px, 5px 5px;
+            background-repeat: no-repeat;
+            padding-right: 34px;
+        }
+        dialog select option { background: #16161f; color: var(--text); }
         dialog input::placeholder,
         dialog textarea::placeholder { color: #6b6b80; }
         dialog input:focus,
+        dialog select:focus,
         dialog textarea:focus {
             outline: none;
             background: rgba(124, 92, 255, 0.08);
@@ -497,6 +510,7 @@
                data-fallback="아직 한 줄 소개를 작성하지 않았습니다."></p>
             <div class="me-grid">
                 <div><span class="k">아이디</span><span class="v">@<span data-personal="userId"></span></span></div>
+                <div><span class="k">소속 반</span><span class="v" data-personal="classNo" data-fallback="-"></span></div>
                 <div><span class="k">이메일</span><span class="v" data-personal="email" data-fallback="-"></span></div>
                 <div><span class="k">생년월일</span><span class="v" data-personal="birth" data-fallback="-"></span></div>
                 <div><span class="k">성별</span><span class="v" data-personal="gender" data-fallback="-"></span></div>
@@ -537,6 +551,17 @@
         <form method="dialog" class="dlg-body" id="editForm">
             <p class="dlg-title">✏️ 내 소개 수정</p>
             <p class="dlg-sub">고친 내용은 이 브라우저에 저장되어 다음에 로그인해도 그대로 남습니다.</p>
+
+            <div class="dlg-field">
+                <label for="eClassNo">소속 반</label>
+                <select id="eClassNo">
+                    <option value="">-- 선택해 주세요 --</option>
+                    <option value="1">1반 (201호)</option>
+                    <option value="2">2반 (202호)</option>
+                    <option value="3">3반 (204호)</option>
+                    <option value="4">4반 (205호)</option>
+                </select>
+            </div>
 
             <div class="dlg-field">
                 <label for="eName">이름</label>
@@ -689,6 +714,7 @@
             const user = Auth.currentUser();
             if (!user) return;
 
+            document.getElementById("eClassNo").value = user.classNo || "";
             document.getElementById("eName").value = user.name || "";
             document.getElementById("eBirth").value = user.birth || "";
             document.getElementById("eIntro").value = user.intro || "";
@@ -726,6 +752,7 @@
 
             Auth.saveUser({
                 userId: user.userId,
+                classNo: document.getElementById("eClassNo").value,
                 name: document.getElementById("eName").value.trim(),
                 birth: document.getElementById("eBirth").value,
                 gender: checked("eGender")[0] || "",

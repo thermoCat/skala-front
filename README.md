@@ -23,6 +23,7 @@ media/  여행 앨범 예시 사진 자리 (media/README.md 참고)
 | `logIn.html` / `signUp.html` / `signUpResult.html` | 로그인 · 회원가입 |
 | `myProfile.html` | 소개 페이지. 로그인한 회원이 직접 수정 가능 |
 | `myClass.html` | 강의 시간표 (고정, 회원별 개인화 없음) |
+| `myCurriculum.html` | 가입 때 고른 반에 맞는 주차별 교육과정(일자·과목명·담당 교수) |
 | `myHoliday.html` | 캘린더에서 날짜를 눌러 휴일 계획(제목·내용·시간)을 등록 |
 | `myTrip.html` | 여행 앨범. 내 컴퓨터에서 사진을 올려 제목·내용과 함께 게시 |
 | `myMemo.html` | 개인 메모장 |

@@ -431,6 +431,18 @@
                 <legend>개인 프로필 정보</legend>
 
                 <div class="field">
+                    <label for="classNo">소속 반<span class="req">(필수)</span></label>
+                    <select id="classNo" name="classNo" required>
+                        <option value="">-- 선택해 주세요 --</option>
+                        <option value="1">1반 (201호)</option>
+                        <option value="2">2반 (202호)</option>
+                        <option value="3">3반 (204호)</option>
+                        <option value="4">4반 (205호)</option>
+                    </select>
+                    <p class="hint">내 반에 맞는 과목·교수 교육과정을 보여주는 데 사용됩니다.</p>
+                </div>
+
+                <div class="field">
                     <label for="name">이름</label>
                     <input type="text" id="name" name="name"
                            placeholder="홍길동" maxlength="20" autocomplete="name">
@@ -612,6 +624,7 @@
                 userId: userId,
                 password: password,
                 email: data.get("emailId").trim() + "@" + domain,
+                classNo: data.get("classNo"),
                 name: data.get("name").trim(),
                 birth: data.get("birth"),
                 gender: data.get("gender"),
