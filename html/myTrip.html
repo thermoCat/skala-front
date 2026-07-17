@@ -136,9 +136,12 @@
         /* ── 앨범(썸네일) 그리드 ── */
         .album {
             display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            grid-template-columns: repeat(3, 1fr);
             gap: 18px;
             margin-top: 24px;
+        }
+        @media (max-width: 786px) {
+            .album { grid-template-columns: 1fr; }
         }
         .album-card {
             position: relative;

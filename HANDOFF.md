@@ -176,9 +176,21 @@ media/  사진/영상/음악 자산
     다르게 만들어져 있어 — 사용자 결정에 따라 **구조는 그대로 두고 클래스만 추가**했다.
     `.trip-card`에 대한 별도 CSS 규칙은 없다(이미 `.album-card`가 배경색/테두리/
     패딩/마진을 갖추고 있음).
-  - `html/myClass.html`에는 규칙(위 "지켜야 할 규칙")에 따라 `<link rel="stylesheet"
-    href="../css/style.css">` **한 줄만** 추가했다. 폰트·container·다른 구조는 전혀
-    건드리지 않았다 — 사용자가 "링크만 추가"를 명시적으로 승인함.
+  - `html/myClass.html`은 처음엔 `css/style.css` 링크만 추가했었지만, 이후 사용자가
+    폰트(Galmuri14) 적용도 명시적으로 요청해서 지금은 폰트까지 함께 바뀐 상태다
+    (표 내용·구조는 여전히 그대로). container div는 여전히 넣지 않았다 — 요청받은
+    적 없음.
   - **아직 반영 안 한 것 (사용자가 "손대지말기"라고 답함)**: `h1`/`h2`에 `padding`,
     `border`를 추가하는 항목. 지금은 크기(font-size)·그라디언트 텍스트만 있고
     padding/border는 없다. 필요해지면 다시 이 문서와 함께 확인할 것.
+- **[과제] CSS 심화 미션 대응** (미션4: Flex/Grid 레이아웃, 미션5: 반응형):
+  - `index.html`의 `.site-nav ul`을 `display:grid` → `display:flex; flex-direction:column;`
+    으로 바꿨다 (Flexbox 요건). gap이 같아서 시각적으로는 동일하다. `.layout`(nav/main/aside
+    가로 배치)은 원래부터 CSS Grid였어서 그대로 뒀다 — 이미 요건 충족.
+  - `index.html`의 반응형 breakpoint를 `900px` → **`786px`**로 스펙에 맞게 수정했다
+    (`.layout { grid-template-columns: 1fr; }`로 본문/사이드바가 세로 1열이 되는 지점).
+  - `myTrip.html`의 앨범 그리드(`.album`)를 `grid-template-columns: repeat(auto-fill,
+    minmax(180px, 1fr))`(가변 열 개수)에서 **`repeat(3, 1fr)`**(고정 3열)로 바꾸고,
+    `@media (max-width: 786px)`에서 1열로 바뀌도록 미디어 쿼리를 추가했다. 카드 폭이
+    760px라 원래도 대부분 3열로 보이던 상태라 데스크톱에서는 시각적 차이가 거의 없다.
+  - 브라우저에서 786px 경계 위/아래 및 3열→1열 전환을 실제로 렌더링해서 확인했다.

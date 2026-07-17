@@ -107,7 +107,8 @@
         /* ── nav ── */
         .site-nav ul {
             list-style: none;
-            display: grid;
+            display: flex;
+            flex-direction: column;
             gap: 8px;
         }
         .nav-link {
@@ -422,7 +423,7 @@
             opacity: 0.75;
         }
 
-        @media (max-width: 900px) {
+        @media (max-width: 786px) {
             .layout { grid-template-columns: 1fr; }
             .site-nav, .site-aside { position: static; }
         }
