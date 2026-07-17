@@ -25,15 +25,15 @@ git clone https://github.com/thermoCat/skala-front.git
 10. **`dad62b2`** — myHoliday(휴일 계획 캘린더), `js/features/alarms.js`(입실·퇴실 알림 +
     `.ics` 캘린더 내보내기), myMemo(개인 메모장) 추가.
 11. 여행 앨범을 사진+영상+음악 묶음으로 개편, 회원가입에 소속 반을 받아 반별
-    교육과정 페이지(myCurriculum.html) 추가, `css/base.css` 공통 스타일 분리 및
+    교육과정 페이지(myCurriculum.html) 추가, `css/style.css` 공통 스타일 분리 및
     `js/` 폴더를 `core/features/data`로 재구성.
 
 ## 디자인 컨벤션 — 반드시 맞춰서 작업할 것
 
 모든 페이지가 같은 다크 테마를 쓴다. 새 페이지/컴포넌트를 만들 때 아래를 그대로 재사용한다.
 
-**`css/base.css`를 모든 페이지의 `<title>` 바로 아래에서 링크한다**
-(`<link rel="stylesheet" href="../css/base.css">`, `<style>`보다 먼저). 색상 변수,
+**`css/style.css`를 모든 페이지의 `<title>` 바로 아래에서 링크한다**
+(`<link rel="stylesheet" href="../css/style.css">`, `<style>`보다 먼저). 색상 변수,
 리셋, 오로라 배경, 배지의 초록 점, 그라디언트 텍스트, 카드 등장 애니메이션,
 footer 링크 색상처럼 페이지마다 토씨 하나 다르지 않던 것들이 여기 들어있다.
 카드 폭·배지 글자 크기·제목 크기처럼 페이지마다 실제로 다른 값은 각 페이지의
@@ -52,11 +52,11 @@ footer 링크 색상처럼 페이지마다 토씨 하나 다르지 않던 것들
 ```
 
 **공통 구성 요소**
-- **배경**: 움직이는 오로라(`.aurora` + 3개 `<span>`, `radial-gradient` + `drift` 애니메이션) — `css/base.css`
+- **배경**: 움직이는 오로라(`.aurora` + 3개 `<span>`, `radial-gradient` + `drift` 애니메이션) — `css/style.css`
 - **카드**: `border-radius: 28px`, `background: var(--surface)`, `backdrop-filter: blur(16px)`,
   `border: 1px solid var(--border)`, 그림자 `box-shadow: 0 24px 80px rgba(0,0,0,.45)` —
   이 틀은 각 페이지 `<style>`에 있고(카드 폭은 페이지마다 다름), 안의 `.badge .dot` 점
-  깜빡임과 `h1 .gradient`/`h2 .accent` 그라디언트 텍스트 효과는 `css/base.css`가 담당
+  깜빡임과 `h1 .gradient`/`h2 .accent` 그라디언트 텍스트 효과는 `css/style.css`가 담당
 - **배지**: 알약 모양(`border-radius: 999px`), 초록 점(`.dot`)이 깜빡이는 "SKALA FRONTEND · 페이지명"
 - **그라디언트 텍스트**: `linear-gradient(90deg, accent-1, accent-2, accent-3, accent-1)` +
   `background-clip: text` + `shine` 애니메이션으로 흐르는 효과
@@ -67,13 +67,13 @@ footer 링크 색상처럼 페이지마다 토씨 하나 다르지 않던 것들
   index.html 하단 스크립트에 구현 있음, 복붙해서 재사용
 
 새 페이지를 만들 때는 기존 페이지(`myMemo.html`이 가장 단순한 예시) 하나를 통째로
-복사해서 시작하는 게 제일 빠르고 톤이 어긋나지 않는다. `css/base.css` 링크와
+복사해서 시작하는 게 제일 빠르고 톤이 어긋나지 않는다. `css/style.css` 링크와
 `<script src="../js/core/auth.js">` 등 스크립트 경로도 함께 따라온다.
 
 ## 폴더 구조
 
 ```
-css/    base.css — 모든 페이지가 공유하는 색상 변수·리셋·오로라·공통 애니메이션
+css/    style.css — 모든 페이지가 공유하는 색상 변수·리셋·오로라·공통 애니메이션
 html/   페이지별 HTML
 js/
   core/      auth.js — 회원/로그인/개인화 (거의 모든 페이지가 의존)
@@ -106,9 +106,10 @@ media/  사진/영상/음악 자산
 
 ## 지켜야 할 규칙
 
-- **`html/myClass.html`은 절대 수정하지 않는다** — 시간표 고정 과제라 처음부터
-  손대지 않기로 한 파일. `css/base.css` 공통 스타일 분리 작업 때도 이 파일만
-  예외로 두고 자체 `<style>`을 그대로 뒀다.
+- **`html/myClass.html`의 시간표 표(`<table>`) 내용·구조는 바꾸지 않는다** — 시간표
+  고정 과제라 처음부터 손대지 않기로 한 부분. 단, 사용자가 명시적으로 허락한 경우엔
+  폰트 등 전체 페이지 스타일 변경은 다른 페이지와 함께 적용한다 (예: Galmuri14 폰트).
+  뭔가 바꾸기 전에 "이것도 myClass.html에 적용해도 되냐"고 확인할 것.
 - 커밋은 한국어 컨벤셔널 커밋(`feat:`, `fix:`, `docs:`)으로 작성하고,
   `Co-Authored-By: Claude` 등 AI 관련 표기는 넣지 않는다.
 - 회원·사진·계획·메모는 전부 브라우저 `localStorage`에만 저장된다. 컴퓨터를
@@ -144,11 +145,40 @@ media/  사진/영상/음악 자산
   - 새 스프레드시트를 받으면 `js/data/curriculum.js` 생성에 쓴 추출 로직을 다시 돌려야
     한다 (스크립트 자체는 저장해두지 않았으니, 같은 시트 구조라면 openpyxl로
     새로 뽑으면 된다).
-- CSS/JS 정리 작업으로 모든 페이지가 `css/base.css`를 링크하고, `js/`가
+- CSS/JS 정리 작업으로 모든 페이지가 `css/style.css`를 링크하고, `js/`가
   `core/features/data`로 나뉘었다 (`html/myClass.html`만 예외 — 위 "지켜야 할 규칙"
   참고). 페이지마다 다르던 부분(카드 폭, 배지·제목 글자 크기 등)은 그대로 각 페이지
-  `<style>`에 남아 있고, 완전히 똑같던 부분만 `css/base.css`로 옮겼다. 유일한 예외는
+  `<style>`에 남아 있고, 완전히 똑같던 부분만 `css/style.css`로 옮겼다. 유일한 예외는
   `myProfile.html`의 오로라 투명도(0.32/0.18, 다른 페이지는 0.3/0.16)인데, 원래도
-  이 페이지만 살짝 진하게 되어 있어서 `css/base.css` 링크 뒤에 그 두 줄만 오버라이드로
+  이 페이지만 살짝 진하게 되어 있어서 `css/style.css` 링크 뒤에 그 두 줄만 오버라이드로
   남겨뒀다.
 - README.md의 스크린샷 표는 자리만 있고 이미지가 없다. 캡처해서 채워 넣을 것.
+- **[과제] CSS 기초 미션 대응** (미션1: 전체 테마/텍스트 Styling, 미션2: 박스 모델):
+  - 구글 폰트(Noto Sans KR) → 되돌림 → Galmuri11 Condensed를 거쳐, 최종적으로
+    **Galmuri14** 픽셀 폰트로 정착했다 (전부 사용자가 직접 지정). `html/myClass.html`을
+    포함한 **10개 페이지 전부**의 `<head>`에
+    `<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/quiple/galmuri@2.40.4/dist/galmuri.css">`
+    를 넣고, `body`에 `font-family: Galmuri14, (기존 폴백 스택...);`를 추가했다.
+    Galmuri14는 스트레치(condensed) 변형이 없어 `font-stretch` 선언은 넣지 않았다.
+    Galmuri는 한글을 지원하는 드문 픽셀 폰트라 한글이 대부분인 이 사이트에 적합하다.
+    CDN 버전은 `2.40.4`로 고정해뒀다(`@latest`는 나중에 바뀔 수 있어 재현성을 위해
+    고정 버전 사용). **`myClass.html`도 사용자가 명시적으로 폰트 적용을 요청해서
+    함께 바꿨다** — 표(`<table>`) 내용·구조는 그대로 두고 `<link>`와 `font-family`만
+    변경. Galmuri14는 볼드(700) 글자가 없어서 `font-weight:700` 이상을 쓰는 곳은
+    브라우저가 합성(faux) 볼드로 그린다 — 실제 볼드 폰트 파일이 아니라서 살짝
+    두꺼워 보이는 정도지 깨지진 않는다.
+  - `body` 바로 아래 `<div class="container">`를 추가했다 (`css/style.css`의
+    `.container { display:flex; flex-direction:column; align-items:center; width:100%; }`).
+    body가 이미 flex로 가운데 정렬하고 있어서 시각적으로는 변화가 없다.
+  - `myTrip.html`의 앨범 카드(`.album-card`)에 `trip-card` 클래스를 추가로 붙였다
+    (`class="album-card trip-card"`). 과제 스펙은 `<p class="trip-card">` 리뷰 카드
+    목록을 요구하지만, 이 프로젝트는 사진+영상+음악 앨범 시스템으로 이미 완전히
+    다르게 만들어져 있어 — 사용자 결정에 따라 **구조는 그대로 두고 클래스만 추가**했다.
+    `.trip-card`에 대한 별도 CSS 규칙은 없다(이미 `.album-card`가 배경색/테두리/
+    패딩/마진을 갖추고 있음).
+  - `html/myClass.html`에는 규칙(위 "지켜야 할 규칙")에 따라 `<link rel="stylesheet"
+    href="../css/style.css">` **한 줄만** 추가했다. 폰트·container·다른 구조는 전혀
+    건드리지 않았다 — 사용자가 "링크만 추가"를 명시적으로 승인함.
+  - **아직 반영 안 한 것 (사용자가 "손대지말기"라고 답함)**: `h1`/`h2`에 `padding`,
+    `border`를 추가하는 항목. 지금은 크기(font-size)·그라디언트 텍스트만 있고
+    padding/border는 없다. 필요해지면 다시 이 문서와 함께 확인할 것.

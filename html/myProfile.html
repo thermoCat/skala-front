@@ -4,13 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SKALA · 나의 소개</title>
-    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/quiple/galmuri@2.40.4/dist/galmuri.css">
+    <link rel="stylesheet" href="../css/style.css">
     <style>
         body {
             min-height: 100vh;
             background: var(--bg);
             color: var(--text);
-            font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", "Segoe UI", sans-serif;
+            font-family: Galmuri14, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", "Segoe UI", sans-serif;
             line-height: 1.7;
             display: flex;
             flex-direction: column;
@@ -411,6 +412,7 @@
         <span></span><span></span><span></span>
     </div>
 
+    <div class="container">
     <div id="auth-area"></div>
 
     <main class="card">
@@ -561,6 +563,7 @@
     </dialog>
 
     <p class="saved-toast" id="toast">✅ 저장했습니다</p>
+    </div>
 
     <script src="../js/core/auth.js"></script>
     <script src="../js/features/alarms.js"></script>

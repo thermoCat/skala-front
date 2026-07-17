@@ -4,13 +4,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SKALA · 나의 여행지</title>
-    <link rel="stylesheet" href="../css/base.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/quiple/galmuri@2.40.4/dist/galmuri.css">
+    <link rel="stylesheet" href="../css/style.css">
     <style>
         body {
             min-height: 100vh;
             background: var(--bg);
             color: var(--text);
-            font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", "Segoe UI", sans-serif;
+            font-family: Galmuri14, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", "Segoe UI", sans-serif;
             line-height: 1.7;
             display: flex;
             flex-direction: column;
@@ -552,6 +553,7 @@
         <span></span><span></span><span></span>
     </div>
 
+    <div class="container">
     <div id="auth-area"></div>
 
     <main class="card">
@@ -648,6 +650,7 @@
             </div>
         </div>
     </dialog>
+    </div>
 
     <script src="../js/core/auth.js"></script>
     <script src="../js/features/alarms.js"></script>
@@ -728,7 +731,7 @@
         function makeAlbumCard(album) {
             const card = document.createElement("button");
             card.type = "button";
-            card.className = "album-card";
+            card.className = "album-card trip-card";
 
             const cover = albumCover(album);
             if (cover) {
