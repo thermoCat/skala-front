@@ -334,12 +334,10 @@
         .snake-stage .game-feedback { text-align: center; }
         .snake-board { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--border); }
         .snake-board-title { font-size: 0.85rem; font-weight: 800; margin-bottom: 10px; }
-        .snake-board-list { list-style: none; counter-reset: snake-rank; display: grid; gap: 6px; }
+        .snake-board-list { list-style: none; display: grid; gap: 6px; }
         .snake-board-list li {
-            counter-increment: snake-rank;
             display: flex;
             align-items: center;
-            justify-content: space-between;
             gap: 10px;
             padding: 9px 12px;
             border-radius: 10px;
@@ -349,12 +347,28 @@
             font-weight: 600;
         }
         .snake-board-list li::before {
-            content: counter(snake-rank) "위";
             flex-shrink: 0;
-            font-size: 0.74rem;
-            font-weight: 800;
-            color: var(--accent-2);
+            font-size: 1.05rem;
         }
+        /* 금·은·동 순서대로 메달 이모지와 색을 입힌다 (순위표는 3위까지만 남는다) */
+        .snake-board-list li:nth-child(1) {
+            border-color: rgba(250, 204, 21, 0.5);
+            background: linear-gradient(135deg, rgba(250, 204, 21, 0.16), rgba(250, 204, 21, 0.03));
+        }
+        .snake-board-list li:nth-child(1)::before { content: "🥇"; }
+        .snake-board-list li:nth-child(1) .snake-board-score { color: #facc15; }
+        .snake-board-list li:nth-child(2) {
+            border-color: rgba(203, 213, 225, 0.5);
+            background: linear-gradient(135deg, rgba(203, 213, 225, 0.14), rgba(203, 213, 225, 0.03));
+        }
+        .snake-board-list li:nth-child(2)::before { content: "🥈"; }
+        .snake-board-list li:nth-child(2) .snake-board-score { color: #cbd5e1; }
+        .snake-board-list li:nth-child(3) {
+            border-color: rgba(205, 127, 50, 0.5);
+            background: linear-gradient(135deg, rgba(205, 127, 50, 0.16), rgba(205, 127, 50, 0.03));
+        }
+        .snake-board-list li:nth-child(3)::before { content: "🥉"; }
+        .snake-board-list li:nth-child(3) .snake-board-score { color: #d99a6c; }
         .snake-board-name { flex: 1; }
         .snake-board-score { color: var(--muted); font-weight: 700; }
         .snake-board-empty {
@@ -365,6 +379,7 @@
             background: none !important;
             border: 1px dashed var(--border) !important;
         }
+        .snake-board-empty::before { content: none !important; }
 
         /* ── 비로그인 잠금: 헤더 아래를 흐리게 덮는다 ── */
         .gated { position: relative; }

@@ -76,9 +76,9 @@ var SnakeGame = (function () {
         };
     }
 
-    /* ── 5위까지 남는 순위표 (localStorage, 이 브라우저를 쓰는 모두가 공유) ── */
+    /* ── 3위(금은동)까지 남는 순위표 (localStorage, 이 브라우저를 쓰는 모두가 공유) ── */
     var SCORES_KEY = "skala:snakeScores";
-    var MAX_SCORES = 5;
+    var MAX_SCORES = 3;
 
     function getScores() {
         try {

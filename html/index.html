@@ -230,7 +230,7 @@
             </div>
 
             <div class="snake-board">
-                <p class="snake-board-title">🏆 순위 TOP 5</p>
+                <p class="snake-board-title">🏆 순위 TOP 3</p>
                 <ol class="snake-board-list" id="snakeBoardList"></ol>
             </div>
 
@@ -669,6 +669,7 @@
         const SNAKE_TICK_MS = 130;
         const SNAKE_CELL = snakeCanvas.width / 18; // snake.js의 COLS/ROWS(18)와 맞춘 칸 크기
         let snakeTimer = null;
+        let snakeCountdownTimer = null;
 
         function drawSnake(state) {
             snakeCtx.fillStyle = "#0a0a12";
@@ -681,6 +682,18 @@
                 snakeCtx.fillStyle = i === 0 ? "#00d4ff" : "#7c5cff";
                 snakeCtx.fillRect(seg.x * SNAKE_CELL + 1, seg.y * SNAKE_CELL + 1, SNAKE_CELL - 2, SNAKE_CELL - 2);
             });
+        }
+
+        // 시작 전 보드 위에 반투명 막을 깔고 큰 숫자(또는 문구)를 겹쳐 그린다
+        function drawSnakeOverlay(state, label) {
+            drawSnake(state);
+            snakeCtx.fillStyle = "rgba(10, 10, 18, 0.55)";
+            snakeCtx.fillRect(0, 0, snakeCanvas.width, snakeCanvas.height);
+            snakeCtx.fillStyle = "#e8e8f0";
+            snakeCtx.font = "800 " + (snakeCanvas.width * 0.22) + "px -apple-system, sans-serif";
+            snakeCtx.textAlign = "center";
+            snakeCtx.textBaseline = "middle";
+            snakeCtx.fillText(label, snakeCanvas.width / 2, snakeCanvas.height / 2);
         }
 
         function escapeSnakeName(name) {
@@ -703,6 +716,7 @@
 
         function stopSnakeLoop() {
             if (snakeTimer) { clearInterval(snakeTimer); snakeTimer = null; }
+            if (snakeCountdownTimer) { clearInterval(snakeCountdownTimer); snakeCountdownTimer = null; }
         }
 
         function endSnakeGame(state) {
@@ -729,13 +743,26 @@
         function startSnakeGame() {
             stopSnakeLoop();
             const state = SnakeGame.start();
-            drawSnake(state);
             snakeScoreEl.textContent = "점수: 0";
             snakeFeedback.textContent = "";
             snakeFeedback.className = "game-feedback";
             snakeRestartBtn.hidden = true;
             renderSnakeBoard();
-            snakeTimer = setInterval(snakeStep, SNAKE_TICK_MS);
+
+            // 시작하기 전에 3·2·1 카운트다운을 보여준 다음 실제 게임 루프를 돈다
+            let count = 3;
+            drawSnakeOverlay(state, String(count));
+            snakeCountdownTimer = setInterval(() => {
+                count--;
+                if (count > 0) {
+                    drawSnakeOverlay(state, String(count));
+                    return;
+                }
+                clearInterval(snakeCountdownTimer);
+                snakeCountdownTimer = null;
+                drawSnake(state);
+                snakeTimer = setInterval(snakeStep, SNAKE_TICK_MS);
+            }, 800);
         }
 
         const SNAKE_KEYS = {
