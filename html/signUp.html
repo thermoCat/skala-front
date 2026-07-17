@@ -31,7 +31,7 @@
                            placeholder="4~15자 영문/숫자" required
                            minlength="4" maxlength="15" pattern="[A-Za-z0-9]{4,15}"
                            autocomplete="username">
-                    <p class="hint">영문과 숫자만 사용해 4~15자로 입력해 주세요.</p>
+                    <p class="hint" id="userIdHint">영문과 숫자만 사용해 4~15자로 입력해 주세요.</p>
                 </div>
 
                 <div class="field">
@@ -41,7 +41,7 @@
                            minlength="8" maxlength="20"
                            pattern="[A-Za-z0-9!@#$%^&amp;*()_\-+=]{8,20}"
                            autocomplete="new-password">
-                    <p class="hint">영문과 숫자를 각각 하나 이상 포함해 8~20자로 입력해 주세요. (특수문자 !@#$%^&amp;*()_-+= 사용 가능)</p>
+                    <p class="hint" id="passwordHint">영문과 숫자를 각각 하나 이상 포함해 8~20자로 입력해 주세요. (특수문자 !@#$%^&amp;*()_-+= 사용 가능)</p>
                 </div>
 
                 <div class="field">
@@ -229,8 +229,65 @@
             setTimeout(() => {
                 countEl.textContent = introEl.value.length;
                 syncDomainField();
+                checkUserIdLive();
+                checkPasswordLive();
             }, 0);
         });
+
+        // ── 아이디/비밀번호를 입력할 때마다 바로바로 형식을 검사한다 ──
+        // (제출 버튼을 눌러야만 알 수 있으면 답답하니, keyup 한 글자마다 반응하는
+        //  input 이벤트로 걸어서 즉시 초록/빨강 힌트와 setCustomValidity를 갱신한다)
+        const userIdInput = document.getElementById("userId");
+        const userIdHint = document.getElementById("userIdHint");
+        const passwordInput = document.getElementById("password");
+        const passwordHint = document.getElementById("passwordHint");
+
+        function checkUserIdLive() {
+            const value = userIdInput.value.trim();
+            if (!value) {
+                userIdInput.setCustomValidity("");
+                userIdHint.className = "hint";
+                userIdHint.textContent = "영문과 숫자만 사용해 4~15자로 입력해 주세요.";
+                return;
+            }
+            if (!Auth.patterns.userId.test(value)) {
+                userIdInput.setCustomValidity("아이디 형식이 올바르지 않습니다.");
+                userIdHint.className = "hint hint-bad";
+                userIdHint.textContent = "⚠️ 영문과 숫자만 사용해 4~15자로 입력해 주세요.";
+                return;
+            }
+            if (Auth.getUser(value)) {
+                userIdInput.setCustomValidity("이미 사용 중인 아이디입니다.");
+                userIdHint.className = "hint hint-bad";
+                userIdHint.textContent = "⚠️ 이미 사용 중인 아이디입니다.";
+                return;
+            }
+            userIdInput.setCustomValidity("");
+            userIdHint.className = "hint hint-ok";
+            userIdHint.textContent = "✅ 사용할 수 있는 아이디입니다.";
+        }
+
+        function checkPasswordLive() {
+            const value = passwordInput.value;
+            if (!value) {
+                passwordInput.setCustomValidity("");
+                passwordHint.className = "hint";
+                passwordHint.textContent = "영문과 숫자를 각각 하나 이상 포함해 8~20자로 입력해 주세요. (특수문자 !@#$%^&*()_-+= 사용 가능)";
+                return;
+            }
+            if (!Auth.patterns.password.test(value)) {
+                passwordInput.setCustomValidity("비밀번호 형식이 올바르지 않습니다.");
+                passwordHint.className = "hint hint-bad";
+                passwordHint.textContent = "⚠️ 영문과 숫자를 각각 하나 이상 포함해 8~20자로 입력해 주세요.";
+                return;
+            }
+            passwordInput.setCustomValidity("");
+            passwordHint.className = "hint hint-ok";
+            passwordHint.textContent = "✅ 사용할 수 있는 비밀번호 형식입니다.";
+        }
+
+        userIdInput.addEventListener("input", checkUserIdLive);
+        passwordInput.addEventListener("input", checkPasswordLive);
 
         // ── 가입 정보를 브라우저에 저장 ──
         // 비밀번호를 SHA-256으로 해시하는 과정이 비동기라, 제출을 항상 가로챈 뒤

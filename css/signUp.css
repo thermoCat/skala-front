@@ -105,8 +105,11 @@
             grid-column: 2;
             font-size: 0.76rem;
             color: var(--muted);
+            transition: color 0.15s ease;
         }
         .field.stack .hint { grid-column: 1; }
+        .hint.hint-ok { color: #4ade80; font-weight: 700; }
+        .hint.hint-bad { color: #ffc0d2; font-weight: 700; }
 
         input[type="text"],
         input[type="password"],
