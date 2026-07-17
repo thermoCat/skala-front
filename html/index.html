@@ -743,6 +743,7 @@
         };
 
         function handleSnakeKeydown(e) {
+            if (!snakeDialog.open) return;
             const move = SNAKE_KEYS[e.key];
             if (!move) return;
             e.preventDefault(); // 방향키로 뒤쪽 페이지가 스크롤되지 않도록 막는다
@@ -757,8 +758,11 @@
         snakeRestartBtn.addEventListener("click", startSnakeGame);
         document.getElementById("snakeCloseBtn").addEventListener("click", () => snakeDialog.close());
 
-        // 모달이 열려 있을 때만 방향키를 게임에 쓰고, 닫히면(ESC 포함) 루프도 같이 멈춘다
-        snakeDialog.addEventListener("keydown", handleSnakeKeydown);
+        // document에 걸어야 캔버스 등 어디에 포커스가 있든 방향키를 확실히 가로채
+        // 뒤쪽 페이지가 스크롤되는 걸 막을 수 있다. 대신 다이얼로그가 열려 있을 때만
+        // 동작하도록 handleSnakeKeydown 안에서 snakeDialog.open을 확인한다.
+        document.addEventListener("keydown", handleSnakeKeydown);
+        // 닫히면(ESC 포함) 루프도 같이 멈춘다
         snakeDialog.addEventListener("close", stopSnakeLoop);
     </script>
 </body>
