@@ -136,6 +136,196 @@
             font-weight: 500;
             color: var(--muted);
         }
+        /* <a>가 아니라 <button>으로 만든 메뉴 항목(게임)도 같은 모양이 되도록 */
+        button.nav-link {
+            width: 100%;
+            font-family: inherit;
+            cursor: pointer;
+        }
+
+        /* ── 게임/가방 보기 창 (공통 다이얼로그 틀) ── */
+        dialog#bagDialog,
+        dialog#gameDialog,
+        dialog#upDownDialog,
+        dialog#gradeDialog {
+            width: min(440px, 92vw);
+            max-height: 86vh;
+            overflow-y: auto;
+            margin: auto;
+            padding: 0;
+            border: none;
+            border-radius: 24px;
+            color: var(--text);
+            background: #12121c;
+            box-shadow: 0 30px 90px rgba(0, 0, 0, 0.6);
+        }
+        dialog#bagDialog::backdrop,
+        dialog#gameDialog::backdrop,
+        dialog#upDownDialog::backdrop,
+        dialog#gradeDialog::backdrop { background: rgba(5, 5, 10, 0.65); backdrop-filter: blur(4px); }
+        .bag-add-row { display: flex; gap: 8px; margin-bottom: 4px; }
+        .bag-add-row input {
+            padding: 10px 13px;
+            border-radius: 11px;
+            font-family: inherit;
+            font-size: 0.9rem;
+            color: var(--text);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            transition: border-color 0.2s ease, background 0.2s ease;
+        }
+        .bag-add-row input[type="text"] { flex: 2; min-width: 0; }
+        .bag-add-row input[type="number"] { flex: 1; min-width: 0; }
+        .bag-add-row input:focus {
+            outline: none;
+            background: rgba(124, 92, 255, 0.08);
+            border-color: rgba(124, 92, 255, 0.6);
+        }
+        .bag-add-row button {
+            flex-shrink: 0;
+            padding: 10px 18px;
+            border-radius: 11px;
+            border: none;
+            font-family: inherit;
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: #fff;
+            cursor: pointer;
+            background: linear-gradient(90deg, var(--accent-1), var(--accent-2));
+            transition: transform 0.2s ease;
+        }
+        .bag-add-row button:hover { transform: translateY(-2px); }
+        .bag-list { list-style: none; display: grid; gap: 8px; margin-top: 14px; }
+        .bag-list li {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 12px 14px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border);
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        .bag-list li.bag-empty {
+            display: block;
+            text-align: center;
+            font-size: 0.85rem;
+            font-weight: 400;
+            color: var(--muted);
+            background: none;
+            border: 1px dashed var(--border);
+        }
+        .bag-del-btn {
+            flex-shrink: 0;
+            padding: 5px 12px;
+            border-radius: 9px;
+            border: 1px solid var(--border);
+            font-family: inherit;
+            font-size: 0.76rem;
+            font-weight: 700;
+            color: var(--muted);
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.04);
+            transition: color 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+        }
+        .bag-del-btn:hover {
+            color: #ffc0d2;
+            background: rgba(255, 92, 138, 0.14);
+            border-color: rgba(255, 92, 138, 0.45);
+        }
+        .dlg-body { padding: 30px; }
+        .dlg-title { font-size: 1.15rem; font-weight: 900; letter-spacing: -0.01em; margin-bottom: 4px; }
+        .dlg-sub { font-size: 0.84rem; color: var(--muted); margin-bottom: 20px; }
+        .game-choices { display: grid; gap: 12px; }
+        .game-choice {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            padding: 16px 18px;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border);
+            cursor: pointer;
+            text-align: left;
+            font-family: inherit;
+            transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
+        }
+        .game-choice:hover {
+            transform: translateY(-3px);
+            border-color: rgba(124, 92, 255, 0.5);
+            background: rgba(124, 92, 255, 0.12);
+        }
+        .game-icon { font-size: 1.6rem; flex-shrink: 0; }
+        .game-info { display: flex; flex-direction: column; gap: 3px; }
+        .game-name { font-weight: 800; font-size: 0.95rem; color: var(--text); }
+        .game-desc { font-size: 0.8rem; color: var(--muted); }
+        .dlg-actions { display: flex; gap: 10px; margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--border); }
+        .dlg-actions button {
+            flex: 1;
+            padding: 12px;
+            border-radius: 12px;
+            border: none;
+            font-family: inherit;
+            font-size: 0.92rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+        }
+        .dlg-cancel {
+            color: var(--text);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border) !important;
+        }
+        .dlg-cancel:hover { background: rgba(255, 255, 255, 0.1); }
+        .dlg-save {
+            color: #fff;
+            background: linear-gradient(90deg, var(--accent-1), var(--accent-2));
+            box-shadow: 0 8px 24px rgba(124, 92, 255, 0.35);
+        }
+        .dlg-save:hover { transform: translateY(-2px); }
+
+        /* ── 게임 진행 창(입력 + 결과) ── */
+        .game-input-row { display: flex; gap: 10px; margin-top: 4px; }
+        .game-input-row input {
+            flex: 1;
+            width: 100%;
+            padding: 10px 13px;
+            border-radius: 11px;
+            font-family: inherit;
+            font-size: 0.92rem;
+            color: var(--text);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            transition: border-color 0.2s ease, background 0.2s ease;
+        }
+        .game-input-row input:focus {
+            outline: none;
+            background: rgba(124, 92, 255, 0.08);
+            border-color: rgba(124, 92, 255, 0.6);
+        }
+        .game-input-row button {
+            flex-shrink: 0;
+            padding: 10px 20px;
+            border-radius: 11px;
+            border: none;
+            font-family: inherit;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: #fff;
+            cursor: pointer;
+            background: linear-gradient(90deg, var(--accent-1), var(--accent-2));
+            transition: transform 0.2s ease;
+        }
+        .game-input-row button:hover { transform: translateY(-2px); }
+        .game-input-row button:disabled { opacity: 0.5; cursor: not-allowed; transform: none; }
+        .game-meta { margin-top: 12px; font-size: 0.82rem; color: var(--muted); }
+        .game-feedback { margin-top: 10px; font-size: 0.92rem; font-weight: 700; min-height: 1.4em; }
+        .game-feedback.up { color: var(--accent-2); }
+        .game-feedback.down { color: var(--accent-3); }
+        .game-feedback.win { color: #b8f5cd; }
+        .game-feedback.warn { color: #ffc0d2; }
 
         /* ── 비로그인 잠금: 헤더 아래를 흐리게 덮는다 ── */
         .gated { position: relative; }
@@ -457,6 +647,8 @@
                     <li><a href="myHoliday.html" class="nav-link">🏖️ 휴일 계획 <span class="en">Holiday</span></a></li>
                     <li><a href="myTrip.html" class="nav-link">🌍 여행 앨범 <span class="en">Album</span></a></li>
                     <li><a href="myMemo.html" class="nav-link">📝 메모 <span class="en">Memo</span></a></li>
+                    <li><button type="button" class="nav-link" id="bagMenuBtn">🎒 내 가방 <span class="en">My Bag</span></button></li>
+                    <li><button type="button" class="nav-link" id="gameMenuBtn">🎮 게임 <span class="en">Games</span></button></li>
                     <!-- 이미 로그인한 회원에게는 회원가입 메뉴를 보여주지 않는다 -->
                     <li data-auth="out" hidden>
                         <a href="signUp.html" class="nav-link">✍️ 회원가입 <span class="en">Sign Up</span></a>
@@ -529,9 +721,103 @@
     </div>
     </div>
 
+    <!-- 내 가방 창 -->
+    <dialog id="bagDialog">
+        <div class="dlg-body">
+            <p class="dlg-title">🎒 내 가방</p>
+            <p class="dlg-sub">가방 속 물품과 개수를 적어두세요.</p>
+
+            <div class="bag-add-row">
+                <input type="text" id="bagNameInput" placeholder="물품 이름" maxlength="20">
+                <input type="number" id="bagCountInput" placeholder="개수" min="1" max="99">
+                <button type="button" id="bagAddBtn">추가</button>
+            </div>
+            <p class="game-feedback" id="bagAddFeedback"></p>
+
+            <ul class="bag-list" id="bagList"></ul>
+            <p class="game-meta" id="bagTotal"></p>
+            <div class="dlg-actions">
+                <button type="button" class="dlg-cancel" id="bagCloseBtn">닫기</button>
+            </div>
+        </div>
+    </dialog>
+
+    <!-- 게임 선택 창 -->
+    <dialog id="gameDialog">
+        <div class="dlg-body">
+            <p class="dlg-title">🎮 게임 선택</p>
+            <p class="dlg-sub">하고 싶은 게임을 골라주세요.</p>
+            <div class="game-choices">
+                <button type="button" class="game-choice" id="startUpDownBtn">
+                    <span class="game-icon">🔢</span>
+                    <span class="game-info">
+                        <span class="game-name">Up-Down 숫자 맞추기</span>
+                        <span class="game-desc">1~50 사이 컴퓨터가 정한 숫자를 맞혀보세요</span>
+                    </span>
+                </button>
+                <button type="button" class="game-choice" id="startGradeBtn">
+                    <span class="game-icon">📊</span>
+                    <span class="game-info">
+                        <span class="game-name">성적 계산기</span>
+                        <span class="game-desc">3과목 점수를 입력하면 평균과 합격 여부를 알려줘요</span>
+                    </span>
+                </button>
+            </div>
+            <div class="dlg-actions">
+                <button type="button" class="dlg-cancel" id="gameDialogCloseBtn">닫기</button>
+            </div>
+        </div>
+    </dialog>
+
+    <!-- Up-Down 게임 진행 창 -->
+    <dialog id="upDownDialog">
+        <div class="dlg-body">
+            <p class="dlg-title">🔢 Up-Down 숫자 맞추기</p>
+            <p class="dlg-sub">컴퓨터가 1~50 사이의 숫자를 정했어요. 맞혀보세요!</p>
+
+            <div class="game-input-row">
+                <input type="number" id="upDownInput" min="1" max="50" placeholder="1~50 사이 숫자">
+                <button type="button" id="upDownSubmitBtn">확인</button>
+            </div>
+
+            <p class="game-feedback" id="upDownFeedback">숫자를 입력하고 확인을 눌러보세요.</p>
+            <p class="game-meta" id="upDownTries">시도 횟수: 0번</p>
+
+            <div class="dlg-actions">
+                <button type="button" class="dlg-cancel" id="upDownCloseBtn">닫기</button>
+                <button type="button" class="dlg-save" id="upDownRestartBtn" hidden>다시 하기</button>
+            </div>
+        </div>
+    </dialog>
+
+    <!-- 성적 계산기 진행 창 -->
+    <dialog id="gradeDialog">
+        <div class="dlg-body">
+            <p class="dlg-title">📊 성적 계산기</p>
+            <p class="dlg-sub">3과목 점수를 차례로 입력하면 평균과 합격 여부를 알려드려요.
+                <strong>평균 60점 이상이면 합격입니다.</strong></p>
+
+            <p class="game-meta" id="gradeSubjectLabel">HTML 점수를 입력하세요</p>
+            <div class="game-input-row">
+                <input type="number" id="gradeInput" min="0" max="100" placeholder="점수 (0~100)">
+                <button type="button" id="gradeSubmitBtn">다음</button>
+            </div>
+
+            <p class="game-feedback" id="gradeFeedback"></p>
+
+            <div class="dlg-actions">
+                <button type="button" class="dlg-cancel" id="gradeCloseBtn">닫기</button>
+                <button type="button" class="dlg-save" id="gradeRestartBtn" hidden>다시 하기</button>
+            </div>
+        </div>
+    </dialog>
+
     <script src="../js/core/auth.js"></script>
     <script src="../js/data/timetable.js"></script>
     <script src="../js/features/alarms.js"></script>
+    <script src="../script/bag.js"></script>
+    <script src="../script/upDown.js"></script>
+    <script src="../script/grade.js"></script>
     <script>
         function pad2(n) { return String(n).padStart(2, "0"); }
         function localDateKey(d) { return d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate()); }
@@ -763,8 +1049,8 @@
             }
         }
 
-        // 메뉴 클릭 → 폭죽을 터뜨린 뒤 이동
-        document.querySelectorAll(".nav-link").forEach((link) => {
+        // 메뉴 클릭 → 폭죽을 터뜨린 뒤 이동 (링크가 아닌 게임 버튼은 대상에서 제외)
+        document.querySelectorAll("a.nav-link").forEach((link) => {
             link.addEventListener("click", (e) => {
                 // 새 탭으로 여는 클릭은 기본 동작을 그대로 둔다
                 if (e.metaKey || e.ctrlKey || e.shiftKey || e.button !== 0) return;
@@ -774,6 +1060,170 @@
                 fireConfetti(rect.left + rect.width / 2, rect.top + rect.height / 2);
                 setTimeout(() => { window.location.href = link.href; }, 700);
             });
+        });
+
+        // ── 내 가방: 이동 대신 가방 창을 연다 (물품은 회원별로 입력·저장) ──
+        const bagMenuBtn = document.getElementById("bagMenuBtn");
+        const bagDialog = document.getElementById("bagDialog");
+        const bagNameInput = document.getElementById("bagNameInput");
+        const bagCountInput = document.getElementById("bagCountInput");
+        const bagAddFeedback = document.getElementById("bagAddFeedback");
+
+        bagMenuBtn.addEventListener("click", () => {
+            const rect = bagMenuBtn.getBoundingClientRect();
+            fireConfetti(rect.left + rect.width / 2, rect.top + rect.height / 2);
+            bagNameInput.value = "";
+            bagCountInput.value = "";
+            bagAddFeedback.textContent = "";
+            bagAddFeedback.className = "game-feedback";
+            showMyBag();
+            bagDialog.showModal();
+            bagNameInput.focus();
+        });
+        document.getElementById("bagCloseBtn").addEventListener("click", () => bagDialog.close());
+
+        function submitBagItem() {
+            const ok = addBagItem(bagNameInput.value, bagCountInput.value);
+            if (!ok) {
+                bagAddFeedback.textContent = "물품 이름과 개수(1개 이상)를 입력해 주세요.";
+                bagAddFeedback.className = "game-feedback warn";
+                return;
+            }
+            bagAddFeedback.textContent = "";
+            bagAddFeedback.className = "game-feedback";
+            bagNameInput.value = "";
+            bagCountInput.value = "";
+            bagNameInput.focus();
+        }
+
+        document.getElementById("bagAddBtn").addEventListener("click", submitBagItem);
+        bagNameInput.addEventListener("keydown", (e) => { if (e.key === "Enter") submitBagItem(); });
+        bagCountInput.addEventListener("keydown", (e) => { if (e.key === "Enter") submitBagItem(); });
+
+        // ── 게임 메뉴: 이동 대신 게임 선택 창을 연다 ──
+        const gameMenuBtn = document.getElementById("gameMenuBtn");
+        const gameDialog = document.getElementById("gameDialog");
+
+        gameMenuBtn.addEventListener("click", () => {
+            const rect = gameMenuBtn.getBoundingClientRect();
+            fireConfetti(rect.left + rect.width / 2, rect.top + rect.height / 2);
+            gameDialog.showModal();
+        });
+        document.getElementById("gameDialogCloseBtn").addEventListener("click", () => gameDialog.close());
+
+        // ── Up-Down 게임: 알림창(alert) 대신 이 모달 안에서 진행 상태가 바뀐다 ──
+        const upDownDialog = document.getElementById("upDownDialog");
+        const upDownInput = document.getElementById("upDownInput");
+        const upDownFeedback = document.getElementById("upDownFeedback");
+        const upDownTries = document.getElementById("upDownTries");
+        const upDownSubmitBtn = document.getElementById("upDownSubmitBtn");
+        const upDownRestartBtn = document.getElementById("upDownRestartBtn");
+
+        function resetUpDownUI() {
+            UpDownGame.start();
+            upDownInput.value = "";
+            upDownInput.disabled = false;
+            upDownSubmitBtn.disabled = false;
+            upDownFeedback.textContent = "숫자를 입력하고 확인을 눌러보세요.";
+            upDownFeedback.className = "game-feedback";
+            upDownTries.textContent = "시도 횟수: 0번";
+            upDownRestartBtn.hidden = true;
+        }
+
+        function submitUpDownGuess() {
+            const r = UpDownGame.guess(upDownInput.value.trim());
+            if (r.result === "invalid") {
+                upDownFeedback.textContent = "숫자를 입력해 주세요.";
+                upDownFeedback.className = "game-feedback warn";
+                return;
+            }
+            upDownTries.textContent = "시도 횟수: " + r.tries + "번";
+            upDownInput.value = "";
+
+            if (r.result === "down") {
+                upDownFeedback.textContent = "⬇️ Down!";
+                upDownFeedback.className = "game-feedback down";
+                upDownInput.focus();
+            } else if (r.result === "up") {
+                upDownFeedback.textContent = "⬆️ Up!";
+                upDownFeedback.className = "game-feedback up";
+                upDownInput.focus();
+            } else {
+                upDownFeedback.textContent = "🎉 축하합니다! " + r.tries + "번 만에 맞추셨습니다!";
+                upDownFeedback.className = "game-feedback win";
+                upDownInput.disabled = true;
+                upDownSubmitBtn.disabled = true;
+                upDownRestartBtn.hidden = false;
+            }
+        }
+
+        upDownSubmitBtn.addEventListener("click", submitUpDownGuess);
+        upDownInput.addEventListener("keydown", (e) => { if (e.key === "Enter") submitUpDownGuess(); });
+        upDownRestartBtn.addEventListener("click", resetUpDownUI);
+        document.getElementById("upDownCloseBtn").addEventListener("click", () => upDownDialog.close());
+
+        document.getElementById("startUpDownBtn").addEventListener("click", () => {
+            gameDialog.close();
+            resetUpDownUI();
+            upDownDialog.showModal();
+            upDownInput.focus();
+        });
+
+        // ── 성적 계산기: 알림창(alert) 대신 이 모달 안에서 진행 상태가 바뀐다 ──
+        const gradeDialog = document.getElementById("gradeDialog");
+        const gradeInput = document.getElementById("gradeInput");
+        const gradeSubjectLabel = document.getElementById("gradeSubjectLabel");
+        const gradeFeedback = document.getElementById("gradeFeedback");
+        const gradeSubmitBtn = document.getElementById("gradeSubmitBtn");
+        const gradeRestartBtn = document.getElementById("gradeRestartBtn");
+
+        function resetGradeUI() {
+            GradeCalculator.start();
+            gradeInput.value = "";
+            gradeInput.disabled = false;
+            gradeSubmitBtn.disabled = false;
+            gradeFeedback.textContent = "";
+            gradeFeedback.className = "game-feedback";
+            gradeSubjectLabel.textContent = GradeCalculator.currentSubject() + " 점수를 입력하세요.";
+            gradeRestartBtn.hidden = true;
+        }
+
+        function submitGradeScore() {
+            const r = GradeCalculator.submit(gradeInput.value.trim());
+            if (r.result === "invalid") {
+                gradeFeedback.textContent = "숫자를 입력해 주세요.";
+                gradeFeedback.className = "game-feedback warn";
+                return;
+            }
+            gradeInput.value = "";
+
+            if (r.result === "next") {
+                gradeSubjectLabel.textContent = r.subject + " 점수를 입력하세요.";
+                gradeFeedback.textContent = "";
+                gradeFeedback.className = "game-feedback";
+                gradeInput.focus();
+            } else {
+                gradeSubjectLabel.textContent = "결과";
+                gradeFeedback.innerHTML =
+                    "총점: " + r.total + "점, 평균: " + r.average.toFixed(1) + "점 (합격 기준 " + r.passScore + "점 이상)<br>" +
+                    (r.pass ? "✅ 합격입니다!" : "❌ 불합격입니다.");
+                gradeFeedback.className = "game-feedback " + (r.pass ? "win" : "down");
+                gradeInput.disabled = true;
+                gradeSubmitBtn.disabled = true;
+                gradeRestartBtn.hidden = false;
+            }
+        }
+
+        gradeSubmitBtn.addEventListener("click", submitGradeScore);
+        gradeInput.addEventListener("keydown", (e) => { if (e.key === "Enter") submitGradeScore(); });
+        gradeRestartBtn.addEventListener("click", resetGradeUI);
+        document.getElementById("gradeCloseBtn").addEventListener("click", () => gradeDialog.close());
+
+        document.getElementById("startGradeBtn").addEventListener("click", () => {
+            gameDialog.close();
+            resetGradeUI();
+            gradeDialog.showModal();
+            gradeInput.focus();
         });
     </script>
 </body>

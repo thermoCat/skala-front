@@ -132,6 +132,21 @@
         return write(memosKey(userId), memos);
     }
 
+    /* ── 내 가방 물품 ──────────────────────── */
+
+    function bagKey(userId) {
+        return "skala:bag:" + userId;
+    }
+
+    function getBagItems(userId) {
+        return userId ? read(bagKey(userId), []) : [];
+    }
+
+    function saveBagItems(userId, items) {
+        if (!userId) return { ok: false };
+        return write(bagKey(userId), items);
+    }
+
     function login(userId, password) {
         var user = getUser(userId);
         if (!user) return { ok: false, reason: "등록되지 않은 아이디입니다." };
@@ -379,6 +394,8 @@
         saveHolidays: saveHolidays,
         getMemos: getMemos,
         saveMemos: saveMemos,
+        getBagItems: getBagItems,
+        saveBagItems: saveBagItems,
         labels: { gender: GENDER_LABEL, interest: INTEREST_LABEL, route: ROUTE_LABEL, classNo: CLASS_LABEL }
     };
 
