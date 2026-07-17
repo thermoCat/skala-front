@@ -23,6 +23,16 @@
     --accent-3: #ff5c8a;
 }
 
+/* Galmuri14 픽셀 폰트: 외부 CDN(jsdelivr /gh/ 경로)이 느려 새로고침마다 폰트가
+   늦게 뒤바뀌어 보이는 문제가 있어, 실제로 쓰는 굵기 하나만 직접 호스팅한다. */
+@font-face {
+    font-family: Galmuri14;
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap;
+    src: local('Galmuri14 Regular'), url('./fonts/Galmuri14.woff2') format('woff2');
+}
+
 * { margin: 0; padding: 0; box-sizing: border-box; }
 
 /* ── 움직이는 오로라 배경 ── */
