@@ -1,0 +1,398 @@
+        body {
+            min-height: 100vh;
+            background: var(--bg);
+            color: var(--text);
+            font-family: Galmuri14, -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard", "Segoe UI", sans-serif;
+            line-height: 1.7;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 92px 24px 80px;
+            overflow-x: hidden;
+        }
+
+        /* 이 페이지만 오로라를 살짝 더 진하게 쓴다 */
+        .aurora span { opacity: 0.32; }
+        .aurora span:nth-child(3) { opacity: 0.18; }
+
+        /* ── 메인 카드 ── */
+        .card {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 780px;
+            padding: clamp(40px, 6vw, 64px) clamp(28px, 5vw, 60px);
+            border-radius: 28px;
+            background: var(--surface);
+            border: 1px solid var(--border);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            box-shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
+            animation: fadeUp 0.9s ease both;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 7px 18px;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            background: rgba(255, 255, 255, 0.04);
+            font-size: 0.82rem;
+            letter-spacing: 0.16em;
+            color: var(--muted);
+            margin-bottom: 26px;
+        }
+
+        h1 {
+            font-size: clamp(1.8rem, 5vw, 2.6rem);
+            font-weight: 900;
+            letter-spacing: -0.02em;
+            line-height: 1.3;
+        }
+
+        .intro {
+            margin-top: 14px;
+            color: var(--muted);
+            font-size: 1rem;
+        }
+
+        /* ── 섹션 ── */
+        section {
+            margin-top: 44px;
+            padding-top: 36px;
+            border-top: 1px solid var(--border);
+            animation: fadeUp 0.9s ease both;
+        }
+        section:nth-of-type(1) { animation-delay: 0.15s; }
+        section:nth-of-type(2) { animation-delay: 0.3s; }
+        section:nth-of-type(3) { animation-delay: 0.45s; }
+
+        h2 {
+            font-size: 1.35rem;
+            font-weight: 800;
+            margin-bottom: 18px;
+            letter-spacing: -0.01em;
+        }
+
+        /* ── ul: 좋아하는 음식 ── */
+        ul {
+            list-style: none;
+            display: grid;
+            gap: 10px;
+        }
+        ul li {
+            padding: 14px 20px;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border);
+            transition: transform 0.25s ease, border-color 0.25s ease, background 0.25s ease;
+        }
+        ul li:hover {
+            transform: translateX(8px);
+            border-color: rgba(124, 92, 255, 0.45);
+            background: rgba(124, 92, 255, 0.08);
+        }
+
+        /* ── ol: 올해 할 일 ── */
+        ol {
+            list-style: none;
+            counter-reset: todo;
+            display: grid;
+            gap: 10px;
+        }
+        ol li {
+            counter-increment: todo;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 14px 20px;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border);
+            transition: transform 0.25s ease, border-color 0.25s ease, background 0.25s ease;
+        }
+        ol li:hover {
+            transform: translateX(8px);
+            border-color: rgba(0, 212, 255, 0.45);
+            background: rgba(0, 212, 255, 0.07);
+        }
+        ol li::before {
+            content: counter(todo);
+            flex-shrink: 0;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 10px;
+            font-weight: 800;
+            font-size: 0.9rem;
+            color: #fff;
+            background: linear-gradient(135deg, var(--accent-1), var(--accent-2));
+            box-shadow: 0 4px 14px rgba(124, 92, 255, 0.35);
+        }
+
+        /* ── dl: 나를 설명하는 단어들 ── */
+        dl {
+            display: grid;
+            gap: 14px;
+        }
+        .word {
+            padding: 18px 22px;
+            border-radius: 14px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border);
+            transition: transform 0.25s ease, border-color 0.25s ease, background 0.25s ease;
+        }
+        .word:hover {
+            transform: translateY(-4px);
+            border-color: rgba(255, 92, 138, 0.45);
+            background: rgba(255, 92, 138, 0.06);
+        }
+        dt {
+            font-weight: 800;
+            font-size: 1.05rem;
+            margin-bottom: 6px;
+        }
+        dd {
+            color: var(--muted);
+            font-size: 0.93rem;
+        }
+
+        /* ── 로그인 사용자 정보 ── */
+        .me {
+            margin-top: 26px;
+            padding: 22px 24px;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border);
+        }
+
+        /* 카드 전체 기준 오른쪽 위에 놓는다 */
+        .edit-btn {
+            position: absolute;
+            top: clamp(24px, 3vw, 34px);
+            right: clamp(24px, 3vw, 34px);
+            z-index: 2;
+            padding: 10px 20px;
+            border-radius: 999px;
+            border: 1px solid var(--border);
+            font-family: inherit;
+            font-size: 0.82rem;
+            font-weight: 700;
+            color: var(--text);
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.06);
+            transition: transform 0.2s ease, background 0.2s ease, border-color 0.2s ease;
+        }
+        .edit-btn:hover {
+            transform: translateY(-2px);
+            background: rgba(124, 92, 255, 0.16);
+            border-color: rgba(124, 92, 255, 0.5);
+        }
+        .edit-btn:active { transform: translateY(0); }
+
+        /* ── 수정 창 ── */
+        dialog {
+            width: min(560px, 92vw);
+            /* 입력칸이 많아 화면보다 길어지므로 높이를 제한하고 안에서 스크롤한다 */
+            max-height: 86vh;
+            overflow-y: auto;
+            margin: auto;
+            padding: 0;
+            border: none;
+            border-radius: 24px;
+            color: var(--text);
+            background: #12121c;
+            box-shadow: 0 30px 90px rgba(0, 0, 0, 0.6);
+        }
+        dialog::backdrop {
+            background: rgba(5, 5, 10, 0.65);
+            backdrop-filter: blur(4px);
+        }
+        .dlg-body { padding: 30px; }
+        .dlg-title {
+            font-size: 1.25rem;
+            font-weight: 900;
+            letter-spacing: -0.01em;
+            margin-bottom: 4px;
+        }
+        .dlg-sub {
+            font-size: 0.84rem;
+            color: var(--muted);
+            margin-bottom: 22px;
+        }
+        .dlg-field { margin-bottom: 16px; }
+        .dlg-field > label {
+            display: block;
+            font-size: 0.84rem;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+        .dlg-field .tip {
+            margin-top: 5px;
+            font-size: 0.74rem;
+            color: var(--muted);
+        }
+        dialog input[type="text"],
+        dialog input[type="date"],
+        dialog select,
+        dialog textarea {
+            width: 100%;
+            padding: 10px 13px;
+            border-radius: 11px;
+            font-family: inherit;
+            font-size: 0.9rem;
+            color: var(--text);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border);
+            transition: border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+        }
+        dialog textarea { min-height: 84px; resize: vertical; line-height: 1.6; }
+        dialog select {
+            cursor: pointer;
+            appearance: none;
+            background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%),
+                              linear-gradient(135deg, var(--muted) 50%, transparent 50%);
+            background-position: calc(100% - 18px) center, calc(100% - 13px) center;
+            background-size: 5px 5px, 5px 5px;
+            background-repeat: no-repeat;
+            padding-right: 34px;
+        }
+        dialog select option { background: #16161f; color: var(--text); }
+        dialog input::placeholder,
+        dialog textarea::placeholder { color: #6b6b80; }
+        dialog input:focus,
+        dialog select:focus,
+        dialog textarea:focus {
+            outline: none;
+            background: rgba(124, 92, 255, 0.08);
+            border-color: rgba(124, 92, 255, 0.6);
+            box-shadow: 0 0 0 4px rgba(124, 92, 255, 0.15);
+        }
+        /* 번호가 붙은 입력칸 */
+        .slots { display: grid; gap: 8px; }
+        .pair { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.5fr); gap: 8px; }
+        @media (max-width: 520px) {
+            .pair { grid-template-columns: 1fr; }
+        }
+
+        .dlg-choices { display: flex; flex-wrap: wrap; gap: 8px; }
+        .dlg-choice {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 14px;
+            border-radius: 11px;
+            font-size: 0.84rem;
+            cursor: pointer;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border);
+            transition: background 0.2s ease, border-color 0.2s ease;
+        }
+        .dlg-choice input { accent-color: var(--accent-1); cursor: pointer; }
+        .dlg-choice:has(input:checked) {
+            border-color: rgba(124, 92, 255, 0.65);
+            background: rgba(124, 92, 255, 0.14);
+        }
+        .dlg-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 24px;
+            /* 창이 스크롤돼도 저장 버튼이 항상 보이도록 아래에 붙여둔다 */
+            position: sticky;
+            bottom: -30px;
+            padding: 20px 0;
+            border-top: 1px solid var(--border);
+            background: #12121c;
+        }
+        .dlg-actions button {
+            flex: 1;
+            padding: 12px;
+            border-radius: 12px;
+            border: none;
+            font-family: inherit;
+            font-size: 0.92rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+        }
+        .dlg-save {
+            color: #fff;
+            background: linear-gradient(90deg, var(--accent-1), var(--accent-2));
+            box-shadow: 0 8px 26px rgba(124, 92, 255, 0.4);
+        }
+        .dlg-save:hover { transform: translateY(-2px); }
+        .dlg-cancel {
+            color: var(--text);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid var(--border) !important;
+        }
+        .dlg-cancel:hover { background: rgba(255, 255, 255, 0.1); }
+
+        .saved-toast {
+            position: fixed;
+            left: 50%;
+            bottom: 32px;
+            transform: translateX(-50%) translateY(20px);
+            z-index: 20;
+            padding: 12px 26px;
+            border-radius: 999px;
+            font-size: 0.88rem;
+            font-weight: 700;
+            color: #b8f5cd;
+            background: rgba(20, 40, 28, 0.95);
+            border: 1px solid rgba(74, 222, 128, 0.4);
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease, transform 0.3s ease;
+        }
+        .saved-toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+        .me-quote {
+            font-size: 1.02rem;
+            font-weight: 700;
+            line-height: 1.6;
+        }
+        .me-quote::before { content: "“"; color: var(--accent-1); margin-right: 2px; }
+        .me-quote::after  { content: "”"; color: var(--accent-2); margin-left: 2px; }
+        .me-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 10px;
+            margin-top: 18px;
+        }
+        .me-grid div {
+            padding: 11px 14px;
+            border-radius: 12px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border);
+        }
+        .me-grid .k {
+            display: block;
+            font-size: 0.72rem;
+            color: var(--muted);
+            margin-bottom: 2px;
+        }
+        .me-grid .v { font-size: 0.88rem; font-weight: 700; }
+        .guest-note {
+            margin-top: 26px;
+            padding: 20px 24px;
+            border-radius: 18px;
+            font-size: 0.9rem;
+            color: var(--muted);
+            background: rgba(124, 92, 255, 0.07);
+            border: 1px dashed rgba(124, 92, 255, 0.4);
+        }
+        .guest-note a { color: var(--accent-2); font-weight: 700; text-decoration: none; }
+        .guest-note a:hover { text-decoration: underline; }
+
+        footer {
+            position: relative;
+            z-index: 1;
+            margin-top: 40px;
+            font-size: 0.8rem;
+            color: var(--muted);
+            letter-spacing: 0.08em;
+        }
