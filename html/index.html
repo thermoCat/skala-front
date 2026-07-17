@@ -224,19 +224,21 @@
             <p class="dlg-sub">방향키(↑ ↓ ← →)로 뱀을 움직여 먹이를 먹으세요. 벽이나 몸통에 부딪히면 끝나요.</p>
 
             <div class="snake-stage">
-                <canvas id="snakeCanvas" width="288" height="288"></canvas>
+                <div class="snake-canvas-wrap">
+                    <canvas id="snakeCanvas" width="288" height="288"></canvas>
+                    <button type="button" class="snake-overlay-btn" id="snakeRestartBtn" hidden>🔄 다시 하기</button>
+                </div>
                 <p class="game-meta" id="snakeScore">점수: 0</p>
                 <p class="game-feedback" id="snakeFeedback"></p>
             </div>
 
             <div class="snake-board">
-                <p class="snake-board-title">🏆 순위 TOP 3</p>
+                <p class="snake-board-title">🏆 나의 TOP 3</p>
                 <ol class="snake-board-list" id="snakeBoardList"></ol>
             </div>
 
             <div class="dlg-actions">
                 <button type="button" class="dlg-cancel" id="snakeCloseBtn">닫기</button>
-                <button type="button" class="dlg-save" id="snakeRestartBtn" hidden>다시 하기</button>
             </div>
         </div>
     </dialog>
@@ -696,22 +698,25 @@
             snakeCtx.fillText(label, snakeCanvas.width / 2, snakeCanvas.height / 2);
         }
 
-        function escapeSnakeName(name) {
-            const d = document.createElement("div");
-            d.textContent = name;
-            return d.innerHTML;
+        // 게임 오버 시 보드 위에 반투명 막만 깔아, 그 위에 겹쳐진 "다시 하기" 버튼이 도드라지게 한다
+        function drawSnakeGameOver(state) {
+            drawSnake(state);
+            snakeCtx.fillStyle = "rgba(10, 10, 18, 0.7)";
+            snakeCtx.fillRect(0, 0, snakeCanvas.width, snakeCanvas.height);
         }
 
         function renderSnakeBoard() {
-            const scores = SnakeGame.getScores();
+            const user = Auth.currentUser();
+            const scores = user ? SnakeGame.getScores(user.userId) : [];
             if (!scores.length) {
                 snakeBoardList.innerHTML = '<li class="snake-board-empty">아직 기록이 없습니다. 첫 기록을 남겨보세요!</li>';
                 return;
             }
-            snakeBoardList.innerHTML = scores.map((s) =>
-                "<li><span class=\"snake-board-name\">" + escapeSnakeName(s.name) +
-                "</span><span class=\"snake-board-score\">" + s.score + "점</span></li>"
-            ).join("");
+            snakeBoardList.innerHTML = scores.map((s) => {
+                const dateLabel = new Date(s.at).toLocaleDateString("ko-KR", { month: "numeric", day: "numeric" });
+                return "<li><span class=\"snake-board-name\">" + dateLabel +
+                    "</span><span class=\"snake-board-score\">" + s.score + "점</span></li>";
+            }).join("");
         }
 
         function stopSnakeLoop() {
@@ -721,12 +726,13 @@
 
         function endSnakeGame(state) {
             stopSnakeLoop();
+            drawSnakeGameOver(state);
+
             const user = Auth.currentUser();
-            const name = user ? Auth.field(user, "name") : "게스트";
-            const result = SnakeGame.recordScore(name, state.score);
+            const result = user ? SnakeGame.recordScore(user.userId, state.score) : { rank: null };
 
             snakeFeedback.textContent = result.rank
-                ? "💥 게임 오버! " + state.score + "점으로 " + result.rank + "위에 올랐습니다!"
+                ? "💥 게임 오버! " + state.score + "점으로 나의 " + result.rank + "위 기록에 올랐습니다!"
                 : "💥 게임 오버! 최종 점수 " + state.score + "점";
             snakeFeedback.className = "game-feedback " + (result.rank ? "win" : "down");
             snakeRestartBtn.hidden = false;

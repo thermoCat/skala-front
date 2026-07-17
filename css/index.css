@@ -322,6 +322,7 @@
 
         /* ── 스네이크 게임 ── */
         .snake-stage { text-align: center; }
+        .snake-canvas-wrap { position: relative; display: inline-block; }
         #snakeCanvas {
             display: block;
             margin: 0 auto;
@@ -329,6 +330,29 @@
             border: 1px solid var(--border);
             background: #0a0a12;
             box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+        }
+        /* 게임오버 시 캔버스(어둡게 처리된) 한가운데 겹쳐서 뜨는 다시 하기 버튼 */
+        .snake-overlay-btn {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 14px 28px;
+            border-radius: 999px;
+            border: none;
+            font-family: inherit;
+            font-size: 0.95rem;
+            font-weight: 800;
+            color: #fff;
+            cursor: pointer;
+            background: linear-gradient(90deg, var(--accent-1), var(--accent-2));
+            box-shadow: 0 10px 30px rgba(124, 92, 255, 0.5);
+            animation: snakeOverlayPop 0.25s ease both;
+        }
+        .snake-overlay-btn:hover { transform: translate(-50%, -50%) translateY(-2px); }
+        @keyframes snakeOverlayPop {
+            from { opacity: 0; transform: translate(-50%, -50%) scale(0.8); }
+            to   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
         }
         .snake-stage .game-meta { text-align: center; font-weight: 700; }
         .snake-stage .game-feedback { text-align: center; }

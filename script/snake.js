@@ -76,24 +76,32 @@ var SnakeGame = (function () {
         };
     }
 
-    /* ── 3위(금은동)까지 남는 순위표 (localStorage, 이 브라우저를 쓰는 모두가 공유) ── */
-    var SCORES_KEY = "skala:snakeScores";
+    /* ── 3위(금은동)까지 남는 순위표. 다른 개인 기록(휴일 계획, 메모 등)과 똑같이
+     * 로그인한 회원별로 따로 저장한다 (userId가 없으면 아무 것도 남기지 않는다). */
+    var SCORES_KEY_PREFIX = "skala:snakeScores:";
     var MAX_SCORES = 3;
 
-    function getScores() {
+    function scoresKey(userId) {
+        return SCORES_KEY_PREFIX + userId;
+    }
+
+    function getScores(userId) {
+        if (!userId) return [];
         try {
-            var raw = localStorage.getItem(SCORES_KEY);
+            var raw = localStorage.getItem(scoresKey(userId));
             return raw ? JSON.parse(raw) : [];
         } catch (e) {
             return [];
         }
     }
 
-    // 점수를 순위표에 넣어본다. 5등 안에 들면 저장하고 몇 등인지 돌려주고,
+    // 점수를 이 회원의 순위표에 넣어본다. 3등 안에 들면 저장하고 몇 등인지 돌려주고,
     // 못 들면 순위표는 그대로 두고 rank를 null로 돌려준다.
-    function recordScore(name, value) {
-        var scores = getScores();
-        var entry = { name: name || "게스트", score: value, at: new Date().toISOString() };
+    function recordScore(userId, value) {
+        if (!userId) return { scores: [], rank: null };
+
+        var scores = getScores(userId);
+        var entry = { score: value, at: new Date().toISOString() };
         scores.push(entry);
         scores.sort(function (a, b) { return b.score - a.score; });
         scores = scores.slice(0, MAX_SCORES);
@@ -101,7 +109,7 @@ var SnakeGame = (function () {
         var rankIndex = scores.indexOf(entry);
         if (rankIndex === -1) return { scores: scores, rank: null };
 
-        try { localStorage.setItem(SCORES_KEY, JSON.stringify(scores)); } catch (e) { /* 무시 */ }
+        try { localStorage.setItem(scoresKey(userId), JSON.stringify(scores)); } catch (e) { /* 무시 */ }
         return { scores: scores, rank: rankIndex + 1 };
     }
 
