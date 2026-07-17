@@ -37,9 +37,11 @@
                 <div class="field">
                     <label for="password">비밀번호<span class="req">(필수)</span></label>
                     <input type="password" id="password" name="password"
-                           placeholder="8자 이상 입력" required minlength="8"
+                           placeholder="영문+숫자 포함 8~20자" required
+                           minlength="8" maxlength="20"
+                           pattern="[A-Za-z0-9!@#$%^&amp;*()_\-+=]{8,20}"
                            autocomplete="new-password">
-                    <p class="hint">8자 이상으로 입력해 주세요.</p>
+                    <p class="hint">영문과 숫자를 각각 하나 이상 포함해 8~20자로 입력해 주세요. (특수문자 !@#$%^&amp;*()_-+= 사용 가능)</p>
                 </div>
 
                 <div class="field">
@@ -231,8 +233,10 @@
         });
 
         // ── 가입 정보를 브라우저에 저장 ──
-        // form의 action="signUpResult.html" method="get" 이동은 그대로 두고,
-        // 넘어가기 직전에 회원 정보만 저장한다.
+        // 비밀번호를 SHA-256으로 해시하는 과정이 비동기라, 제출을 항상 가로챈 뒤
+        // 검증 → 해시 → 저장 → 로그인이 끝나면 직접 결과 페이지로 이동시킨다.
+        // (그래야 signUpResult.html로 이동하는 method="get" 쿼리스트링에
+        //  비밀번호 평문이 그대로 노출되는 일도 함께 막을 수 있다.)
         const errorBox = document.getElementById("formError");
         const errorText = document.getElementById("formErrorText");
 
@@ -242,28 +246,41 @@
             errorBox.scrollIntoView({ behavior: "smooth", block: "center" });
         }
 
-        form.addEventListener("submit", (e) => {
+        form.addEventListener("submit", async (e) => {
+            e.preventDefault();
             errorBox.classList.remove("show");
 
-            // 필수 입력 검사는 브라우저 기본 동작에 맡긴다
-            if (!form.checkValidity()) return;
+            // 필수/형식 입력 검사는 브라우저 기본 동작(풍선 도움말)에 맡긴다
+            if (!form.reportValidity()) return;
 
             const data = new FormData(form);
             const userId = data.get("userId").trim();
+            const password = data.get("password");
+
+            // pattern 속성을 우회한 값이 들어와도 걸러지도록 같은 정규식으로 한 번 더 확인한다
+            if (!Auth.patterns.userId.test(userId)) {
+                showError("아이디는 영문/숫자만 사용해 4~15자로 입력해 주세요.");
+                document.getElementById("userId").focus();
+                return;
+            }
+            if (!Auth.patterns.password.test(password)) {
+                showError("비밀번호는 영문과 숫자를 각각 하나 이상 포함해 8~20자로 입력해 주세요.");
+                document.getElementById("password").focus();
+                return;
+            }
 
             if (Auth.getUser(userId)) {
-                e.preventDefault();
                 showError("이미 사용 중인 아이디입니다. 다른 아이디를 입력해 주세요.");
                 document.getElementById("userId").focus();
                 return;
             }
 
             const domain = data.get("emailDomain") || data.get("customDomain").trim();
-            const password = data.get("password");
+            const passwordHash = await Auth.hashPassword(password);
 
             Auth.saveUser({
                 userId: userId,
-                password: password,
+                passwordHash: passwordHash,
                 email: data.get("emailId").trim() + "@" + domain,
                 classNo: data.get("classNo"),
                 name: data.get("name").trim(),
@@ -279,7 +296,8 @@
             });
 
             // 가입 직후 바로 로그인 상태로 만들어 결과 페이지에서 이름이 보이게 한다
-            Auth.login(userId, password);
+            await Auth.login(userId, password);
+            location.href = "signUpResult.html";
         });
     </script>
 </body>

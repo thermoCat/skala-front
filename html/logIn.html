@@ -70,7 +70,7 @@
             errorBox.classList.add("show");
         }
 
-        form.addEventListener("submit", function (e) {
+        form.addEventListener("submit", async function (e) {
             e.preventDefault();
 
             var id = document.getElementById("userId").value.trim();
@@ -81,7 +81,7 @@
                 return;
             }
 
-            var result = Auth.login(id, pw);
+            var result = await Auth.login(id, pw);
             if (!result.ok) {
                 showError(result.reason);
                 document.getElementById("password").value = "";

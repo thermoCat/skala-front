@@ -4,8 +4,9 @@
  * 서버가 없는 실습 페이지라 회원 정보와 로그인 상태를 브라우저에 저장한다.
  * 저장 위치는 origin 단위라 같은 호스트(file:// 또는 localhost)의 모든 페이지가 공유한다.
  *
- * ※ 실습용이므로 비밀번호를 그대로 저장한다. 실제 서비스라면 서버에서
- *   해시로 검증해야 하며, 브라우저에 비밀번호를 두면 안 된다.
+ * ※ 비밀번호는 SHA-256 해시(passwordHash)만 저장하고 평문은 어디에도 남기지 않는다.
+ *   그래도 서버 없는 클라이언트 저장이라는 한계는 그대로다 — 실제 서비스라면
+ *   반드시 서버 쪽에서 salt를 더한 해시로 검증해야 한다.
  *
  * 페이지에서 쓰는 법
  *   <script src="../js/core/auth.js"></script>
@@ -19,6 +20,23 @@
 
     var USERS_KEY = "skala:users";
     var SESSION_KEY = "skala:session";
+
+    // 아이디: 영문/숫자 4~15자. 비밀번호: 영문+숫자를 포함한 8~20자(특수문자 허용).
+    // 회원가입 폼(html/signUp.html)의 input pattern과 반드시 같은 규칙을 쓴다.
+    var USER_ID_PATTERN = /^[A-Za-z0-9]{4,15}$/;
+    var PASSWORD_PATTERN = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z0-9!@#$%^&*()_\-+=]{8,20}$/;
+
+    /* ── 비밀번호 해시 (SHA-256) ────────────────
+     * 비밀번호는 절대 평문으로 저장하지 않고, SHA-256 해시만 localStorage에 남긴다.
+     * crypto.subtle은 보안 컨텍스트(HTTPS 또는 localhost)에서만 동작한다. */
+    function sha256Hex(text) {
+        var data = new TextEncoder().encode(text);
+        return crypto.subtle.digest("SHA-256", data).then(function (buf) {
+            return Array.prototype.map.call(new Uint8Array(buf), function (b) {
+                return b.toString(16).padStart(2, "0");
+            }).join("");
+        });
+    }
 
     /* ── 저장소 ─────────────────────────────── */
 
@@ -147,12 +165,15 @@
         return write(bagKey(userId), items);
     }
 
+    // 비밀번호 해시 비교가 비동기라 login도 Promise를 돌려준다.
     function login(userId, password) {
         var user = getUser(userId);
-        if (!user) return { ok: false, reason: "등록되지 않은 아이디입니다." };
-        if (user.password !== password) return { ok: false, reason: "비밀번호가 일치하지 않습니다." };
-        write(SESSION_KEY, { userId: userId, loginAt: new Date().toISOString() });
-        return { ok: true, user: user };
+        if (!user) return Promise.resolve({ ok: false, reason: "등록되지 않은 아이디입니다." });
+        return sha256Hex(password).then(function (hash) {
+            if (user.passwordHash !== hash) return { ok: false, reason: "비밀번호가 일치하지 않습니다." };
+            write(SESSION_KEY, { userId: userId, loginAt: new Date().toISOString() });
+            return { ok: true, user: user };
+        });
     }
 
     function logout() {
@@ -396,6 +417,8 @@
         saveMemos: saveMemos,
         getBagItems: getBagItems,
         saveBagItems: saveBagItems,
+        hashPassword: sha256Hex,
+        patterns: { userId: USER_ID_PATTERN, password: PASSWORD_PATTERN },
         labels: { gender: GENDER_LABEL, interest: INTEREST_LABEL, route: ROUTE_LABEL, classNo: CLASS_LABEL }
     };
 
