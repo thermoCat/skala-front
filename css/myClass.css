@@ -112,8 +112,10 @@
             background-size: 300% auto;
             -webkit-background-clip: text;
             background-clip: text;
+            -webkit-text-fill-color: transparent;
             color: transparent;
             animation: shine 6s linear infinite;
+            will-change: background-position;
         }
         @keyframes shine {
             to { background-position: 300% center; }
