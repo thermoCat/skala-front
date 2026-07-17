@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="darkreader-lock">
     <title>SKALA · 나의 소개</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🚀</text></svg>">
     <link rel="stylesheet" href="../css/global.css">
     <link rel="stylesheet" href="../css/myProfile.css">
 </head>
@@ -17,9 +18,11 @@
     <div id="auth-area"></div>
 
     <main class="card">
-        <button type="button" class="edit-btn" id="editBtn" data-auth="in" hidden>✏️ 프로필 수정</button>
+        <div class="card-header">
+            <div class="badge"><span class="dot"></span>SKALA FRONTEND · MY PROFILE</div>
+            <button type="button" class="edit-btn" id="editBtn" data-auth="in" hidden>✏️ 프로필 수정</button>
+        </div>
 
-        <div class="badge"><span class="dot"></span>SKALA FRONTEND · MY PROFILE</div>
         <h1>👋 안녕하세요!
             <span class="gradient"><span data-personal="name" data-fallback="저">저</span><span data-josa="을/를">를</span> 소개합니다</span>
         </h1>

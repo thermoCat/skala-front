@@ -31,6 +31,15 @@
             animation: fadeUp 0.9s ease both;
         }
 
+        .card-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 26px;
+        }
+
         .badge {
             display: inline-flex;
             align-items: center;
@@ -42,7 +51,6 @@
             font-size: 0.82rem;
             letter-spacing: 0.16em;
             color: var(--muted);
-            margin-bottom: 26px;
         }
 
         h1 {
@@ -170,12 +178,8 @@
             border: 1px solid var(--border);
         }
 
-        /* 카드 전체 기준 오른쪽 위에 놓는다 */
         .edit-btn {
-            position: absolute;
-            top: clamp(24px, 3vw, 34px);
-            right: clamp(24px, 3vw, 34px);
-            z-index: 2;
+            flex-shrink: 0;
             padding: 10px 20px;
             border-radius: 999px;
             border: 1px solid var(--border);
