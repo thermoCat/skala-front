@@ -85,13 +85,18 @@
 }
 
 /* ── 제목 그라디언트 텍스트 ── */
+/* -webkit-text-fill-color + will-change: 부모 헤더의 fadeUp 애니메이션과 겹칠 때
+   background-clip: text 클리핑이 가끔 안 먹고 흰 글씨로 그려지는 브라우저 렌더링
+   버그가 있어, 별도 컴포지팅 레이어로 분리해 방지한다. */
 h1 .gradient {
     background: linear-gradient(90deg, var(--accent-1), var(--accent-2), var(--accent-3), var(--accent-1));
     background-size: 300% auto;
     -webkit-background-clip: text;
     background-clip: text;
+    -webkit-text-fill-color: transparent;
     color: transparent;
     animation: shine 6s linear infinite;
+    will-change: background-position;
 }
 @keyframes shine {
     to { background-position: 300% center; }
@@ -100,6 +105,7 @@ h2 .accent {
     background: linear-gradient(90deg, var(--accent-2), var(--accent-1));
     -webkit-background-clip: text;
     background-clip: text;
+    -webkit-text-fill-color: transparent;
     color: transparent;
 }
 
