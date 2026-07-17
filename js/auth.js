@@ -61,20 +61,45 @@
         return users[user.userId];
     }
 
-    /* ── 여행 사진 ─────────────────────────── */
-    // 사진은 용량이 커서 회원 정보와 따로 보관한다 (회원 저장 때마다 같이 직렬화되면 느려진다)
+    /* ── 여행 앨범 (사진+영상+음악 묶음) ───── */
+    // 용량이 커서 회원 정보와 따로 보관한다 (회원 저장 때마다 같이 직렬화되면 느려진다)
 
-    function photosKey(userId) {
-        return "skala:photos:" + userId;
+    function albumsKey(userId) {
+        return "skala:albums:" + userId;
     }
 
-    function getPhotos(userId) {
-        return userId ? read(photosKey(userId), []) : [];
+    // 모든 회원이 기본으로 갖는 SKALA 예시 앨범. 새 계정은 물론, 예전부터 있던
+    // 계정도 앨범을 한 번도 손대지 않았다면 처음 조회하는 시점에 심어준다.
+    // 회원이 지우고 나면(=저장 기록이 생기면) 다시 심지 않는다.
+    function defaultAlbum(userId) {
+        return {
+            id: "default-skala-" + userId,
+            title: "SKALA 캠퍼스 여행",
+            content: "SKALA와 함께한 하루를 사진·영상·노래로 담았습니다.",
+            photos: [
+                { src: "../media/skala-banner.jpg", alt: "AI 시대, 미래 인재로 성장하는 길 - SKALA (SK AI Leader Academy) 배너" },
+                { src: "../media/sk-logo.png", alt: "SK 로고" }
+            ],
+            thumbnailIndex: 0,
+            audio: { src: "../media/skala-song.mp3", type: "audio/mpeg" },
+            video: { src: "../media/skala-vlog.mp4", type: "video/mp4" },
+            addedAt: new Date().toISOString()
+        };
     }
 
-    function savePhotos(userId, photos) {
+    function getAlbums(userId) {
+        if (!userId) return [];
+        var albums = read(albumsKey(userId), null);
+        if (albums === null) {
+            albums = [defaultAlbum(userId)];
+            write(albumsKey(userId), albums);
+        }
+        return albums;
+    }
+
+    function saveAlbums(userId, albums) {
         if (!userId) return { ok: false };
-        return write(photosKey(userId), photos);
+        return write(albumsKey(userId), albums);
     }
 
     /* ── 휴일 계획 ─────────────────────────── */
@@ -346,8 +371,8 @@
         collectPairs: collectPairs,
         fillSlots: fillSlots,
         fillPairs: fillPairs,
-        getPhotos: getPhotos,
-        savePhotos: savePhotos,
+        getAlbums: getAlbums,
+        saveAlbums: saveAlbums,
         getHolidays: getHolidays,
         saveHolidays: saveHolidays,
         getMemos: getMemos,

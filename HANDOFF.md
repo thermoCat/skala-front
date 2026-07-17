@@ -64,9 +64,9 @@ git clone https://github.com/thermoCat/skala-front.git
   - `<div id="auth-area"></div>` → 로그인 버튼 자동 렌더링
   - `<span data-personal="name" data-fallback="게스트">` → 로그인 값 또는 기본값 자동 채움
   - `<div data-auth="in" hidden>` / `data-auth="out" hidden` → 로그인 여부로 자동 표시/숨김
-  - `Auth.saveUser/getUser/login/logout/currentUser` 및 사진·휴일·메모 저장 함수
-    (`get/savePhotos`, `get/saveHolidays`, `get/saveMemos`) — 전부 회원별 키
-    (`skala:photos:{userId}` 등)로 분리 저장
+  - `Auth.saveUser/getUser/login/logout/currentUser` 및 앨범·휴일·메모 저장 함수
+    (`get/saveAlbums`, `get/saveHolidays`, `get/saveMemos`) — 전부 회원별 키
+    (`skala:albums:{userId}` 등)로 분리 저장
   - `Auth.collectSlots/fillSlots`, `collectPairs/fillPairs` — "3칸 고정 입력" 폼을
     읽고 채우는 헬퍼 (좋아하는 것/할 일/단어에 사용 중)
 - **`js/alarms.js`** — 브라우저 알림 + `.ics` 캘린더 내보내기. 평일 08:50/17:50
@@ -87,9 +87,19 @@ git clone https://github.com/thermoCat/skala-front.git
 
 ## 미완/확인 필요
 
-- `myTrip.html`은 사용자 요청으로 배경음악(`<audio>`)과 브이로그(`<video>`)를
-  제거한 상태다. 원래 과제 스펙은 이 두 요소를 필수로 요구하므로, 제출 전
-  다시 넣을지 확인이 필요하다.
+- `myTrip.html`은 "사진첩" 형태로 개편했다. 한 번 업로드하면 사진(여러 장)+영상+음악이
+  앨범 하나로 묶이고, 메인 화면에는 대표 사진(썸네일) 카드만 늘어서며 눌러야 앨범
+  전체(사진 그리드 + `<audio><source>` + `<video><source>`)를 볼 수 있다. 저장 구조도
+  `Auth.getPhotos/savePhotos`(사진 1장=1건)에서 `Auth.getAlbums/saveAlbums`(앨범
+  1건=사진+영상+음악 묶음, `skala:albums:{userId}`)로 바뀌었다.
+- 비로그인 방문자는 앨범을 볼 수 없고 로그인 안내만 보인다. 대신 모든 회원은
+  `js/auth.js`의 `Auth.getAlbums`가 앨범을 처음 조회하는 시점에 "SKALA 캠퍼스 여행"
+  기본 앨범(사진 2장+노래+영상)을 자동으로 심어준다 — 새 가입자뿐 아니라 이 기능이
+  생기기 전부터 있던 회원도 마찬가지다. 회원이 이 앨범을 지우면 다시 채워 넣지 않는다.
+  media 파일(`skala-banner.jpg`, `sk-logo.png`, `skala-song.mp3`, `skala-vlog.mp4`)은
+  전부 넣어뒀다 (`media/README.md` 참고).
+- 영상 4MB / 음악 3MB 크기 제한을 코드에 넣어뒀다(localStorage 용량 제약). 필요하면
+  `html/myTrip.html`의 `MAX_VIDEO_BYTES`/`MAX_AUDIO_BYTES`를 조정한다.
 - 알림 기능은 실제 기기에서 각 페이지의 "🧪 지금 테스트 알림 보내기" 버튼으로
   직접 켜고 확인해야 한다 (브라우저 알림 권한은 기기·브라우저별로 따로 설정됨).
 - README.md의 스크린샷 표는 자리만 있고 이미지가 없다. 캡처해서 채워 넣을 것.

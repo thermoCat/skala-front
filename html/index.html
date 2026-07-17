@@ -733,21 +733,20 @@
         renderAlarmMini();
 
         // ── 여행 앨범 한 컷 ──
-        // 내가 직접 올린 사진 중 날짜에 따라 하나를 보여준다.
-        // 아직 올린 사진이 없으면 남의 사진(예시)을 대신 보여주지 않고 업로드를 안내한다.
-        // (예전에는 사진이 없을 때 예시 사진을 자기 것처럼 보여줘서 "가입하자마자
-        //  이미 사진이 올라가 있다"는 혼란을 줬다.)
+        // 내 앨범(가입 시 자동으로 들어있는 SKALA 기본 앨범 포함) 중 날짜에 따라 하나를 보여준다.
+        // Auth.getAlbums가 회원마다 처음 조회할 때 SKALA 기본 앨범을 자동으로 심어주므로
+        // 앨범이 하나도 없는 경우는 그 기본 앨범조차 지운 회원뿐이다.
         function renderAlbumCut() {
             const box = document.getElementById("albumCut");
             const user = Auth.currentUser();
-            const mine = user ? Auth.getPhotos(user.userId) : [];
+            const mine = user ? Auth.getAlbums(user.userId).filter((a) => a.photos && a.photos.length) : [];
 
             if (!mine.length) {
                 box.replaceChildren(
                     Object.assign(document.createElement("a"), {
                         href: "myTrip.html",
                         className: "cut-empty",
-                        textContent: "📷 아직 올린 사진이 없습니다 · 첫 사진 올리러 가기 →"
+                        textContent: "📷 아직 올린 앨범이 없습니다 · 첫 앨범 올리러 가기 →"
                     })
                 );
                 return;
@@ -755,17 +754,18 @@
 
             const dayNumber = Math.floor(Date.now() / 86400000);
             const cut = mine[dayNumber % mine.length];
+            const cover = cut.photos[cut.thumbnailIndex || 0] || cut.photos[0];
 
             const link = document.createElement("a");
             link.href = "myTrip.html";
             link.className = "cut-link";
 
             const img = document.createElement("img");
-            img.src = cut.dataUrl;
+            img.src = cover.src;
             img.alt = cut.title || "내가 올린 여행 사진";
 
             const caption = document.createElement("figcaption");
-            caption.textContent = (cut.title || "여행 사진") + " · 앨범 전체 보기 →";
+            caption.textContent = (cut.title || "여행 앨범") + " · 앨범 전체 보기 →";
 
             link.append(img);
             box.replaceChildren(link, caption);
