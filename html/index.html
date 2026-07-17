@@ -160,6 +160,13 @@
                         <span class="game-desc">3과목 점수를 입력하면 평균과 합격 여부를 알려줘요</span>
                     </span>
                 </button>
+                <button type="button" class="game-choice" id="startSnakeBtn">
+                    <span class="game-icon">🐍</span>
+                    <span class="game-info">
+                        <span class="game-name">스네이크</span>
+                        <span class="game-desc">방향키로 조작해서 먹이를 먹고 5위 안에 들어보세요</span>
+                    </span>
+                </button>
             </div>
             <div class="dlg-actions">
                 <button type="button" class="dlg-cancel" id="gameDialogCloseBtn">닫기</button>
@@ -210,6 +217,30 @@
         </div>
     </dialog>
 
+    <!-- 스네이크 게임 진행 창 -->
+    <dialog id="snakeDialog">
+        <div class="dlg-body">
+            <p class="dlg-title">🐍 스네이크</p>
+            <p class="dlg-sub">방향키(↑ ↓ ← →)로 뱀을 움직여 먹이를 먹으세요. 벽이나 몸통에 부딪히면 끝나요.</p>
+
+            <div class="snake-stage">
+                <canvas id="snakeCanvas" width="288" height="288"></canvas>
+                <p class="game-meta" id="snakeScore">점수: 0</p>
+                <p class="game-feedback" id="snakeFeedback"></p>
+            </div>
+
+            <div class="snake-board">
+                <p class="snake-board-title">🏆 순위 TOP 5</p>
+                <ol class="snake-board-list" id="snakeBoardList"></ol>
+            </div>
+
+            <div class="dlg-actions">
+                <button type="button" class="dlg-cancel" id="snakeCloseBtn">닫기</button>
+                <button type="button" class="dlg-save" id="snakeRestartBtn" hidden>다시 하기</button>
+            </div>
+        </div>
+    </dialog>
+
     <script src="../js/core/auth.js"></script>
     <script src="../js/data/timetable.js"></script>
     <script src="../js/features/alarms.js"></script>
@@ -217,6 +248,7 @@
     <script src="../script/bag.js"></script>
     <script src="../script/upDown.js"></script>
     <script src="../script/grade.js"></script>
+    <script src="../script/snake.js"></script>
     <script>
         function pad2(n) { return String(n).padStart(2, "0"); }
         function localDateKey(d) { return d.getFullYear() + "-" + pad2(d.getMonth() + 1) + "-" + pad2(d.getDate()); }
@@ -624,6 +656,110 @@
             gradeDialog.showModal();
             gradeInput.focus();
         });
+
+        // ── 스네이크: 방향키로 조작하는 캔버스 게임, 상위 5위까지 순위표에 남는다 ──
+        const snakeDialog = document.getElementById("snakeDialog");
+        const snakeCanvas = document.getElementById("snakeCanvas");
+        const snakeCtx = snakeCanvas.getContext("2d");
+        const snakeScoreEl = document.getElementById("snakeScore");
+        const snakeFeedback = document.getElementById("snakeFeedback");
+        const snakeRestartBtn = document.getElementById("snakeRestartBtn");
+        const snakeBoardList = document.getElementById("snakeBoardList");
+
+        const SNAKE_TICK_MS = 130;
+        const SNAKE_CELL = snakeCanvas.width / 18; // snake.js의 COLS/ROWS(18)와 맞춘 칸 크기
+        let snakeTimer = null;
+
+        function drawSnake(state) {
+            snakeCtx.fillStyle = "#0a0a12";
+            snakeCtx.fillRect(0, 0, snakeCanvas.width, snakeCanvas.height);
+
+            snakeCtx.fillStyle = "#ff5c8a";
+            snakeCtx.fillRect(state.food.x * SNAKE_CELL + 2, state.food.y * SNAKE_CELL + 2, SNAKE_CELL - 4, SNAKE_CELL - 4);
+
+            state.snake.forEach((seg, i) => {
+                snakeCtx.fillStyle = i === 0 ? "#00d4ff" : "#7c5cff";
+                snakeCtx.fillRect(seg.x * SNAKE_CELL + 1, seg.y * SNAKE_CELL + 1, SNAKE_CELL - 2, SNAKE_CELL - 2);
+            });
+        }
+
+        function escapeSnakeName(name) {
+            const d = document.createElement("div");
+            d.textContent = name;
+            return d.innerHTML;
+        }
+
+        function renderSnakeBoard() {
+            const scores = SnakeGame.getScores();
+            if (!scores.length) {
+                snakeBoardList.innerHTML = '<li class="snake-board-empty">아직 기록이 없습니다. 첫 기록을 남겨보세요!</li>';
+                return;
+            }
+            snakeBoardList.innerHTML = scores.map((s) =>
+                "<li><span class=\"snake-board-name\">" + escapeSnakeName(s.name) +
+                "</span><span class=\"snake-board-score\">" + s.score + "점</span></li>"
+            ).join("");
+        }
+
+        function stopSnakeLoop() {
+            if (snakeTimer) { clearInterval(snakeTimer); snakeTimer = null; }
+        }
+
+        function endSnakeGame(state) {
+            stopSnakeLoop();
+            const user = Auth.currentUser();
+            const name = user ? Auth.field(user, "name") : "게스트";
+            const result = SnakeGame.recordScore(name, state.score);
+
+            snakeFeedback.textContent = result.rank
+                ? "💥 게임 오버! " + state.score + "점으로 " + result.rank + "위에 올랐습니다!"
+                : "💥 게임 오버! 최종 점수 " + state.score + "점";
+            snakeFeedback.className = "game-feedback " + (result.rank ? "win" : "down");
+            snakeRestartBtn.hidden = false;
+            renderSnakeBoard();
+        }
+
+        function snakeStep() {
+            const state = SnakeGame.tick();
+            drawSnake(state);
+            snakeScoreEl.textContent = "점수: " + state.score;
+            if (!state.alive) endSnakeGame(state);
+        }
+
+        function startSnakeGame() {
+            stopSnakeLoop();
+            const state = SnakeGame.start();
+            drawSnake(state);
+            snakeScoreEl.textContent = "점수: 0";
+            snakeFeedback.textContent = "";
+            snakeFeedback.className = "game-feedback";
+            snakeRestartBtn.hidden = true;
+            renderSnakeBoard();
+            snakeTimer = setInterval(snakeStep, SNAKE_TICK_MS);
+        }
+
+        const SNAKE_KEYS = {
+            ArrowUp: [0, -1], ArrowDown: [0, 1], ArrowLeft: [-1, 0], ArrowRight: [1, 0]
+        };
+
+        function handleSnakeKeydown(e) {
+            const move = SNAKE_KEYS[e.key];
+            if (!move) return;
+            e.preventDefault(); // 방향키로 뒤쪽 페이지가 스크롤되지 않도록 막는다
+            SnakeGame.setDirection(move[0], move[1]);
+        }
+
+        document.getElementById("startSnakeBtn").addEventListener("click", () => {
+            gameDialog.close();
+            snakeDialog.showModal();
+            startSnakeGame();
+        });
+        snakeRestartBtn.addEventListener("click", startSnakeGame);
+        document.getElementById("snakeCloseBtn").addEventListener("click", () => snakeDialog.close());
+
+        // 모달이 열려 있을 때만 방향키를 게임에 쓰고, 닫히면(ESC 포함) 루프도 같이 멈춘다
+        snakeDialog.addEventListener("keydown", handleSnakeKeydown);
+        snakeDialog.addEventListener("close", stopSnakeLoop);
     </script>
 </body>
 </html>

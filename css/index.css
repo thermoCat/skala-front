@@ -138,7 +138,8 @@
         dialog#bagDialog,
         dialog#gameDialog,
         dialog#upDownDialog,
-        dialog#gradeDialog {
+        dialog#gradeDialog,
+        dialog#snakeDialog {
             width: min(440px, 92vw);
             max-height: 86vh;
             overflow-y: auto;
@@ -153,7 +154,8 @@
         dialog#bagDialog::backdrop,
         dialog#gameDialog::backdrop,
         dialog#upDownDialog::backdrop,
-        dialog#gradeDialog::backdrop { background: rgba(5, 5, 10, 0.65); backdrop-filter: blur(4px); }
+        dialog#gradeDialog::backdrop,
+        dialog#snakeDialog::backdrop { background: rgba(5, 5, 10, 0.65); backdrop-filter: blur(4px); }
         .bag-add-row { display: flex; gap: 8px; margin-bottom: 4px; }
         .bag-add-row input {
             padding: 10px 13px;
@@ -317,6 +319,52 @@
         .game-feedback.down { color: var(--accent-3); }
         .game-feedback.win { color: #b8f5cd; }
         .game-feedback.warn { color: #ffc0d2; }
+
+        /* ── 스네이크 게임 ── */
+        .snake-stage { text-align: center; }
+        #snakeCanvas {
+            display: block;
+            margin: 0 auto;
+            border-radius: 14px;
+            border: 1px solid var(--border);
+            background: #0a0a12;
+            box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.03);
+        }
+        .snake-stage .game-meta { text-align: center; font-weight: 700; }
+        .snake-stage .game-feedback { text-align: center; }
+        .snake-board { margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--border); }
+        .snake-board-title { font-size: 0.85rem; font-weight: 800; margin-bottom: 10px; }
+        .snake-board-list { list-style: none; counter-reset: snake-rank; display: grid; gap: 6px; }
+        .snake-board-list li {
+            counter-increment: snake-rank;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            padding: 9px 12px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.04);
+            border: 1px solid var(--border);
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        .snake-board-list li::before {
+            content: counter(snake-rank) "위";
+            flex-shrink: 0;
+            font-size: 0.74rem;
+            font-weight: 800;
+            color: var(--accent-2);
+        }
+        .snake-board-name { flex: 1; }
+        .snake-board-score { color: var(--muted); font-weight: 700; }
+        .snake-board-empty {
+            text-align: center;
+            font-size: 0.82rem;
+            font-weight: 400;
+            color: var(--muted);
+            background: none !important;
+            border: 1px dashed var(--border) !important;
+        }
 
         /* ── 비로그인 잠금: 헤더 아래를 흐리게 덮는다 ── */
         .gated { position: relative; }
