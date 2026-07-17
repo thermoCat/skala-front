@@ -28,7 +28,7 @@
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             box-shadow: 0 24px 80px rgba(0, 0, 0, 0.45);
-            animation: fadeUp 0.9s ease both;
+            animation: fadeUp 0.3s ease both;
         }
 
         .badge {
@@ -63,11 +63,11 @@
             margin-top: 44px;
             padding-top: 36px;
             border-top: 1px solid var(--border);
-            animation: fadeUp 0.9s ease both;
+            animation: fadeUp 0.3s ease both;
         }
-        section:nth-of-type(1) { animation-delay: 0.15s; }
-        section:nth-of-type(2) { animation-delay: 0.3s; }
-        section:nth-of-type(3) { animation-delay: 0.45s; }
+        section:nth-of-type(1) { animation-delay: 0.05s; }
+        section:nth-of-type(2) { animation-delay: 0.1s; }
+        section:nth-of-type(3) { animation-delay: 0.15s; }
 
         h2 {
             font-size: 1.35rem;
