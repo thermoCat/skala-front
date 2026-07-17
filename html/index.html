@@ -36,6 +36,7 @@
                     <li><a href="myHoliday.html" class="nav-link">🏖️ 휴일 계획 <span class="en">Holiday</span></a></li>
                     <li><a href="myTrip.html" class="nav-link">🌍 여행 앨범 <span class="en">Album</span></a></li>
                     <li><a href="myMemo.html" class="nav-link">📝 메모 <span class="en">Memo</span></a></li>
+                    <li><button type="button" class="nav-link" id="linksMenuBtn">🔗 링크 모음 <span class="en">Links</span></button></li>
                     <li><button type="button" class="nav-link" id="bagMenuBtn">🎒 내 가방 <span class="en">My Bag</span></button></li>
                     <li><button type="button" class="nav-link" id="gameMenuBtn">🎮 게임 <span class="en">Games</span></button></li>
                     <!-- 이미 로그인한 회원에게는 회원가입 메뉴를 보여주지 않는다 -->
@@ -85,17 +86,10 @@
                     <span class="k">현재 위치</span>
                     <span class="v">📍 광주광역시 광산구</span>
                 </div>
-                <div class="info-item">
-                    <span class="k">추천 학습 사이트</span>
-                    <span class="v">
-                        <a href="https://www.w3schools.com" target="_blank" rel="noopener">
-                            W3Schools 온라인 튜토리얼
-                        </a>
-                    </span>
-                </div>
                 <div class="info-item" data-auth="in" hidden>
                     <span class="k">🔔 입실·퇴실 알림 (평일 8:50 / 17:50)</span>
                     <div class="alarm-mini" id="alarmMini"></div>
+                    <ul class="checklist" id="checklist"></ul>
                 </div>
             </aside>
         </div>
@@ -118,6 +112,40 @@
         </footer>
     </div>
     </div>
+
+    <!-- 링크 모음 창 -->
+    <dialog id="linksDialog">
+        <div class="dlg-body">
+            <p class="dlg-title">🔗 링크 모음</p>
+            <p class="dlg-sub">자주 쓰는 외부 링크예요. 누르면 새 탭에서 열립니다.</p>
+            <div class="game-choices">
+                <a class="game-choice" href="https://theskala.slack.com/docs/T089ENT4A2D/F0BHKPV6Q3A" target="_blank" rel="noopener">
+                    <span class="game-icon">🚀</span>
+                    <span class="game-info">
+                        <span class="game-name">SKALA 온보딩</span>
+                        <span class="game-desc">Slack 온보딩 문서 열기</span>
+                    </span>
+                </a>
+                <a class="game-choice" href="https://zoom.us/join" target="_blank" rel="noopener">
+                    <span class="game-icon">🎥</span>
+                    <span class="game-info">
+                        <span class="game-name">Zoom 참여</span>
+                        <span class="game-desc">회의 참여 페이지 열기</span>
+                    </span>
+                </a>
+                <a class="game-choice" href="https://student.skala-ai.com/login" target="_blank" rel="noopener">
+                    <span class="game-icon">📋</span>
+                    <span class="game-info">
+                        <span class="game-name">출결현황 확인</span>
+                        <span class="game-desc">SKALA 학생 포털 로그인</span>
+                    </span>
+                </a>
+            </div>
+            <div class="dlg-actions">
+                <button type="button" class="dlg-cancel" id="linksCloseBtn">닫기</button>
+            </div>
+        </div>
+    </dialog>
 
     <!-- 내 가방 창 -->
     <dialog id="bagDialog">
@@ -375,6 +403,40 @@
         }
         renderAlarmMini();
 
+        // ── 입·퇴실 체크 목록 ──
+        var CHECKLIST_ITEMS = [
+            { id: "checkin", label: "입실 체크" },
+            { id: "checkout", label: "퇴실 체크" }
+        ];
+        const checklistBox = document.getElementById("checklist");
+        function renderChecklist() {
+            if (!checklistBox) return;
+            const user = Auth.currentUser();
+            if (!user) return;
+            const checked = Auth.getChecklist(user.userId);
+
+            checklistBox.replaceChildren(...CHECKLIST_ITEMS.map((item) => {
+                const li = document.createElement("li");
+                const label = document.createElement("label");
+                const box = document.createElement("input");
+                box.type = "checkbox";
+                box.checked = !!checked[item.id];
+                box.addEventListener("change", () => {
+                    checked[item.id] = box.checked;
+                    Auth.saveChecklist(user.userId, checked);
+                    label.classList.toggle("done", box.checked);
+                });
+                label.className = box.checked ? "done" : "";
+                const text = document.createElement("span");
+                text.textContent = item.label;
+                label.append(box, text);
+                li.append(label);
+                return li;
+            }));
+        }
+        renderChecklist();
+        document.addEventListener("auth:change", renderChecklist);
+
         // ── 여행 앨범 한 컷 ──
         // 내 앨범(가입 시 자동으로 들어있는 SKALA 기본 앨범 포함) 중 날짜에 따라 하나를 보여준다.
         // Auth.getAlbums가 회원마다 처음 조회할 때 SKALA 기본 앨범을 자동으로 심어주므로
@@ -494,6 +556,17 @@
                 setTimeout(() => { window.location.href = link.href; }, 700);
             });
         });
+
+        // ── 링크 모음: 이동 대신 외부 링크 목록 창을 연다 ──
+        const linksMenuBtn = document.getElementById("linksMenuBtn");
+        const linksDialog = document.getElementById("linksDialog");
+
+        linksMenuBtn.addEventListener("click", () => {
+            const rect = linksMenuBtn.getBoundingClientRect();
+            fireConfetti(rect.left + rect.width / 2, rect.top + rect.height / 2);
+            linksDialog.showModal();
+        });
+        document.getElementById("linksCloseBtn").addEventListener("click", () => linksDialog.close());
 
         // ── 내 가방: 이동 대신 가방 창을 연다 (물품은 회원별로 입력·저장) ──
         const bagMenuBtn = document.getElementById("bagMenuBtn");

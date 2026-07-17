@@ -165,6 +165,30 @@
         return write(bagKey(userId), items);
     }
 
+    /* ── 입·퇴실 체크 목록 (날짜가 바뀌면 자동으로 초기화) ─── */
+
+    function checklistKey(userId) {
+        return "skala:checklist:" + userId;
+    }
+
+    function todayKey() {
+        var d = new Date();
+        return d.getFullYear() + "-" + String(d.getMonth() + 1).padStart(2, "0") + "-" + String(d.getDate()).padStart(2, "0");
+    }
+
+    // 저장된 날짜가 오늘이 아니면(=자고 일어나 새 하루가 되면) 체크 상태를 비운 채로 돌려준다
+    function getChecklist(userId) {
+        if (!userId) return {};
+        var saved = read(checklistKey(userId), null);
+        if (!saved || saved.date !== todayKey()) return {};
+        return saved.checked || {};
+    }
+
+    function saveChecklist(userId, checked) {
+        if (!userId) return { ok: false };
+        return write(checklistKey(userId), { date: todayKey(), checked: checked });
+    }
+
     // 비밀번호 해시 비교가 비동기라 login도 Promise를 돌려준다.
     function login(userId, password) {
         var user = getUser(userId);
@@ -417,6 +441,8 @@
         saveMemos: saveMemos,
         getBagItems: getBagItems,
         saveBagItems: saveBagItems,
+        getChecklist: getChecklist,
+        saveChecklist: saveChecklist,
         hashPassword: sha256Hex,
         patterns: { userId: USER_ID_PATTERN, password: PASSWORD_PATTERN },
         labels: { gender: GENDER_LABEL, interest: INTEREST_LABEL, route: ROUTE_LABEL, classNo: CLASS_LABEL }

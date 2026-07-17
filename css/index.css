@@ -134,7 +134,8 @@
             cursor: pointer;
         }
 
-        /* ── 게임/가방 보기 창 (공통 다이얼로그 틀) ── */
+        /* ── 게임/가방/링크 보기 창 (공통 다이얼로그 틀) ── */
+        dialog#linksDialog,
         dialog#bagDialog,
         dialog#gameDialog,
         dialog#upDownDialog,
@@ -151,6 +152,7 @@
             background: #12121c;
             box-shadow: 0 30px 90px rgba(0, 0, 0, 0.6);
         }
+        dialog#linksDialog::backdrop,
         dialog#bagDialog::backdrop,
         dialog#gameDialog::backdrop,
         dialog#upDownDialog::backdrop,
@@ -242,6 +244,7 @@
             border: 1px solid var(--border);
             cursor: pointer;
             text-align: left;
+            text-decoration: none;
             font-family: inherit;
             transition: transform 0.2s ease, border-color 0.2s ease, background 0.2s ease;
         }
@@ -706,6 +709,20 @@
         .alarm-mini-btn:hover { background: rgba(124, 92, 255, 0.15); border-color: rgba(124, 92, 255, 0.5); }
         .alarm-mini-on { font-size: 0.74rem; font-weight: 700; color: #b8f5cd; }
         .alarm-mini-off { font-size: 0.74rem; font-weight: 700; color: #ffc0d2; }
+
+        .checklist { display: flex; flex-direction: column; gap: 6px; margin-top: 6px; }
+        .checklist li { list-style: none; }
+        .checklist label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text);
+            cursor: pointer;
+        }
+        .checklist input[type="checkbox"] { accent-color: var(--accent-1); width: 15px; height: 15px; cursor: pointer; }
+        .checklist label.done span { color: var(--muted); text-decoration: line-through; }
 
         #clock {
             font-variant-numeric: tabular-nums;
